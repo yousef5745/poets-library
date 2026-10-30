@@ -6,6 +6,7 @@ import { ic, GOOGLE_G, FB_LOGO, X_LOGO } from '../icons.js';
 import { header, footer, esc, img, $, toast } from '../ui.js';
 import * as auth from '../auth.js';
 import { CONFIG } from '../../config.js';
+import { showcase, bindShowcase } from '../showcase.js';
 
 const L = (k, v) => t('login.' + k, v);
 const MIN = 8;   // our rule (Supabase minimum is 6)
@@ -84,7 +85,10 @@ export default function login(view, gateFor) {
     ? `<figure class="aaq"><blockquote><p>${esc(gm.verse[0])}</p><p>${esc(gm.verse[1])}</p></blockquote><figcaption>${esc(gm.poet || gm.title)}</figcaption></figure>`
     : gm ? `<figure class="aaq"><blockquote><p>${esc(gm.title)}</p></blockquote>${gm.poet ? `<figcaption>${esc(gm.poet)}</figcaption>` : ''}</figure>`
     : `<figure class="aaq"><blockquote><p>هَلَّا سَأَلْتِ الخَيْلَ يَا ابْنَةَ مَالِكٍ</p><p>إِنْ كُنْتِ جَاهِلَةً بِمَا لَمْ تَعْلَمِي</p></blockquote><figcaption>عنترة بن شدّاد</figcaption></figure>`;
-  $('#app').innerHTML = `${header('login')}<main id="main" class="auth${gate ? ' gate' : ''}" ${gate ? 'data-gate="1"' : ''}>
+  // Logged-out sign-in and the reading gate open with the «اكتشف الحكايات» carousel (not on #/reset).
+  const scs = !u && view !== 'reset' ? showcase() : '';
+  $('#app').innerHTML = `${header('login')}<main id="main" class="auth${gate ? ' gate' : ''}${scs ? ' has-scs' : ''}" ${gate ? 'data-gate="1"' : ''}>
+    ${scs}
     <div class="authart" style="background-image:url(${img((gm && gm.cover) || 'tent')})">
       ${quote}
     </div>
@@ -169,5 +173,6 @@ export default function login(view, gateFor) {
   root.addEventListener('input', onInput);
   root.addEventListener('click', onClick);
   root.addEventListener('submit', onSubmit);
-  return () => { root.removeEventListener('input', onInput); root.removeEventListener('click', onClick); root.removeEventListener('submit', onSubmit); };
+  const offScs = bindShowcase(root);
+  return () => { offScs(); root.removeEventListener('input', onInput); root.removeEventListener('click', onClick); root.removeEventListener('submit', onSubmit); };
 }

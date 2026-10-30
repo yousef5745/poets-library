@@ -21,6 +21,7 @@ const P = {
   flag: '<path d="M5.5 21V4M5.5 4.5h12l-2.5 4 2.5 4h-12"/>',
   logout: '<path d="M14 4.5H5.5v15H14"/><path d="M10 12h10M17 8.5l3.5 3.5-3.5 3.5"/>',
   play: '<path d="M15 6l-8 6 8 6z"/>',
+  pause: '<path d="M9 6v12M15 6v12"/>',
   overview: '<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="4"/><rect x="13" y="10" width="7" height="10"/><rect x="4" y="13" width="7" height="7"/>',
   users: '<circle cx="9" cy="8.5" r="3.5"/><path d="M3 20c1-3.5 3.3-5.5 6-5.5s5 2 6 5.5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.8c1.4.9 2.4 2.6 3 5.2"/>',
   card: '<rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M6.5 14.5h4"/>',

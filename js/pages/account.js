@@ -8,6 +8,7 @@ import { cloud, currentSub, subActive, refreshAccount, onCloud, ALL_STORIES } fr
 import { S, saveNow, setPref } from '../store.js';
 import { CONFIG } from '../../config.js';
 import { sw, flip, tag, confirm, empty } from '../dash-ui.js';
+import { showcase, bindShowcase } from '../showcase.js';
 
 const A = (k, v) => t('acc2.' + k, v);
 const mods = {};          // story id -> loaded module (titles of chapters, endings, looks)
@@ -139,11 +140,20 @@ function contCard() {
   return { html: `<a class="contcard" href="#/read/${s.id}"><img src="${img(s.portrait || s.cover)}" alt=""><div><small>${A('contKicker')}</small><b>${esc(s.title)}</b><small>${A('chOf', { c: fnum(chNum(run.chap)), n: fnum(s.chapters) })}${ct ? ` · «${esc(ct)}»` : ''}</small></div><span class="btn pri sm">${ic('play')}${A('continueShort')}</span></a>`, s };
 }
 
+// The page redraws a few times while data arrives: keep the carousel's place and rebind it.
+let scsOff = null;
 function draw() {
+  const old = document.querySelector('.acc .scs-track'), keep = old ? old.scrollLeft : 0;
+  paint();
+  if (scsOff) scsOff();
+  scsOff = bindShowcase($('#app'));
+  const tr = document.querySelector('.acc .scs-track'); if (tr && keep) tr.scrollLeft = keep;
+}
+function paint() {
   const u = auth.currentUser();
   const app = $('#app');
   if (!u) {
-    app.innerHTML = `${header('account')}<main id="main" class="wrap dash"><section class="acc-head"><div style="grid-column:1/-1"><span class="kicker">${t('acc.title')}</span><h1>${t('acc.title')}</h1><p>${t('acc.needLogin')}</p><a class="btn pri" href="#/login">${t('nav.login')}</a></div></section></main>${footer()}`;
+    app.innerHTML = `${header('account')}<main id="main" class="wrap dash acc">${showcase()}<section class="acc-head"><div style="grid-column:1/-1"><span class="kicker">${t('acc.title')}</span><h1>${t('acc.title')}</h1><p>${t('acc.needLogin')}</p><a class="btn pri" href="#/login">${t('nav.login')}</a></div></section></main>${footer()}`;
     return;
   }
   const p = cloud.profile;
@@ -152,7 +162,7 @@ function draw() {
   const since = (p && p.created_at) || u.created_at;
   const night = S.prefs.theme === 'night';
   const cc = contCard();
-  app.innerHTML = `${header('account')}<main id="main" class="wrap dash acc">
+  app.innerHTML = `${header('account')}<main id="main" class="wrap dash acc">${showcase()}
     <section class="acc-head">${avatar(name, 'acc-avatar', p && p.avatar != null ? p.avatar : auth.avatarUrl(u))}
       <div><span class="kicker">${t('acc.title')}</span><h1><bdi>${esc(name)}</bdi></h1><p class="fine"><bdi class="ltr">${esc(u.email || '')}</bdi></p>
         <p class="fine">${A('via.' + prov) !== 'acc2.via.' + prov ? A('via.' + prov) : A('via.google')} · ${A('since', { d: fmonthYear(since) })}</p></div>
@@ -224,5 +234,5 @@ export default function account() {
   let alive = true;
   Promise.all([loadMods(), loadLedger(), refreshAccount()]).then(() => alive && draw(), () => alive && draw());
   const off = onCloud(() => { if (alive) { loadLedger().then(() => alive && draw()); } });
-  return () => { alive = false; off(); unbind(); };
+  return () => { alive = false; off(); unbind(); if (scsOff) { scsOff(); scsOff = null; } };
 }

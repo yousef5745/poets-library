@@ -23,7 +23,7 @@ const match = (s) => { const q = norm(f.q); return !q || norm(`${s.title} ${s.po
 
 // Cover by the category's rules, not its colour: no-images -> geometric pattern + cartouche,
 // kids -> rounded picture, image covers -> scene + portrait, no art yet -> typographic.
-function bookCover(s, c, i) {
+export function bookCover(s, c, i) {
   const kid = !!(c && c.kid_friendly);
   const age = s.minAge || (c && c.min_age);
   if (s.noCharImages || (c && c.no_character_images)) return `<span class="cv geo">${PATTERN()}<span class="cart">${esc(s.title)}</span></span>`;
