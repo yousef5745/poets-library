@@ -195,3 +195,10 @@ details p{color:var(--mut);padding-bottom:12px}
 .sentbox h2{font-size:24px}
 .sentbox .ic.lg{color:var(--acc)}
 .notice{display:flex;gap:8px;align-items:flex-start;border-inline-start:3px solid var(--acc);padding:8px 12px;background:var(--paper2);font-size:15px}
+
+/* login: only the Google button is filled; email mode tabs are text with an underline */
+.atabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.atabs button{min-height:44px;padding:0 2px;font-family:var(--f-ui);font-weight:700;font-size:16px;color:var(--mut);border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none}
+.atabs button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--acc)}
+.atabs button:hover{color:var(--ink)}
+.authbox .providers .guest{margin:-2px 0 2px;font-size:15px;color:var(--mut)}

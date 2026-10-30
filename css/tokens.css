@@ -9,7 +9,7 @@
   --shadow:rgba(33,27,20,.18);
   --f-read:Amiri,'Noto Naskh Arabic',serif;
   --f-ui:'Noto Naskh Arabic',Amiri,serif;
-  --f-kicker:'Reem Kufi','Noto Naskh Arabic',sans-serif;
+  --f-kicker:'Noto Naskh Arabic',Amiri,serif;   /* Reem Kufi dropped: it broke joins (ه drawn as م) and spacing */
   --f-sans:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Arabic',sans-serif; /* admin + Google button */
   --read-size:22px; --read-lh:1.9;
   --wrap:1200px; --pad:clamp(16px,4vw,32px);

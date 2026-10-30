@@ -2,6 +2,7 @@ import { t, fdate } from './i18n.js';
 import { ic } from './icons.js';
 import { currentUser, displayName, avatarUrl } from './auth.js';
 import { isAdmin } from './cloud.js';
+import { installSlot } from './pwa.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -25,7 +26,7 @@ export function header(active) {
       </nav>
       <div class="topact">
         ${u ? `<a class="btn ghost sm me-btn" href="#/account" aria-label="${t('nav.account')}">${ic('user')}<bdi class="me">${esc(displayName(u).split(' ')[0])}</bdi></a>`
-            : `<a class="btn ghost sm" href="#/login">${ic('user')}<span>${t('nav.login')}</span></a>`}
+            : `${active === 'pricing' ? `<a class="btn sm cta" href="#/">${t('nav.startReading')}</a>` : `<a class="btn sm cta" href="#/pricing">${t('nav.subscribe')}</a>`}<a class="btn ghost sm" href="#/login" aria-label="${t('nav.login')}">${ic('user')}<span>${t('nav.login')}</span></a>`}
         <button class="iconbtn navbtn" data-a="nav" aria-expanded="false" aria-controls="nav" aria-label="${t('nav.menu')}">${ic('menu')}</button>
       </div>
     </div>
@@ -53,7 +54,7 @@ export function applyTheme(theme) {
 export function footer() {
   return `<footer class="foot"><div class="wrap footin">
     <div>${brand()}<p>${t('foot.about')}</p></div>
-    <nav class="flinks"><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a></nav>
+    ${installSlot()}<nav class="flinks"><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a></nav>
   </div></footer>`;
 }
 

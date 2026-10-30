@@ -1,9 +1,10 @@
 // Library (spec section 4): hero, category folio tabs, "الكل" = one shelf per category,
 // #/c/:slug = one category with search, era chips and filters. Empty categories show
 // a "coming soon" panel (the user's rule; the spec hides them, see report).
-import { t, fnum } from '../i18n.js';
+import { t, fnum, freeText } from '../i18n.js';
 import { ic, ornament } from '../icons.js';
 import { header, footer, esc, img, $ } from '../ui.js';
+import { installSlot } from '../pwa.js';
 import { STORIES, ERAS, eraName } from '../../content/catalog.js';
 import { S } from '../store.js';
 import { freeCount } from '../access.js';
@@ -33,12 +34,15 @@ function bookCover(s, c, i) {
 const metaLine = (s) => (s.ready ? `${t('story.chapters', { n: fnum(s.chapters || 5) })} · ${t('story.minutes', { n: fnum(s.minutes) })}` : t('story.soon'));
 const book = (s, c, i) => `<li><a class="bk${c && c.kid_friendly ? ' kid' : ''}${s.ready ? '' : ' soon'}" href="#/story/${s.id}">${bookCover(s, c, i)}<b>${esc(s.title)}</b><span class="by">${esc(s.poet || '')}</span><span class="mt">${metaLine(s)}</span></a></li>`;
 
+// Categories that have stories first; empty ones («قريبًا») after them, each group in admin order.
+const byFilled = () => { const n = (c) => STORIES.filter(inCat(c.slug)).length; return [...CATEGORIES.filter((c) => n(c)), ...CATEGORIES.filter((c) => !n(c))]; };
+
 function catTabs() {
   const tab = (slug, label, n, acc) => {
     const on = f.cat === slug;
-    return `<li data-cat="${acc}"><a class="cattab${on ? ' on' : ''}" href="${slug === ALL ? '#/' : '#/c/' + slug}"${on ? ' aria-current="page"' : ''}>${slug === ALL ? '' : '<span class="sw8"></span>'}${esc(label)}${n === null ? '' : n ? `<small class="tnum">${fnum(n)}</small>` : `<small>${t('story.soon')}</small>`}</a></li>`;
+    return `<li data-cat="${acc}"${n === 0 ? ' class="soonc"' : ''}><a class="cattab${on ? ' on' : ''}" href="${slug === ALL ? '#/' : '#/c/' + slug}"${on ? ' aria-current="page"' : ''}>${slug === ALL ? '' : '<span class="sw8"></span>'}${esc(label)}${n === null ? '' : n ? `<small class="tnum">${fnum(n)}</small>` : `<small>${t('story.soon')}</small>`}</a></li>`;
   };
-  return `<nav class="cattabs" aria-label="${t('lib.sections')}"><div class="wrap" style="padding-inline:0"><ul>${tab(ALL, t('lib.all'), null, 'poets')}${CATEGORIES.map((c) =>
+  return `<nav class="cattabs" aria-label="${t('lib.sections')}"><div class="wrap" style="padding-inline:0"><ul>${tab(ALL, t('lib.all'), null, 'poets')}${byFilled().map((c) =>
     tab(c.slug, catName(c), STORIES.filter(inCat(c.slug)).length, accentOf(c))).join('')}</ul></div></nav>`;
 }
 
@@ -70,12 +74,12 @@ const searchBox = (ph) => `<label class="search"><span class="sr">${t('home.sear
 // ------------------------------------------------------------ الكل
 function shelves() {
   const q = !!norm(f.q);
-  const html = CATEGORIES.map((c) => { const list = STORIES.filter((s) => catOf(s) === c.slug && match(s)); return q && !list.length ? '' : shelf(c, list); }).join('');
+  const html = byFilled().map((c) => { const list = STORIES.filter((s) => catOf(s) === c.slug && match(s)); return q && !list.length ? '' : shelf(c, list); }).join('');
   return html || `<p class="empty">${t('home.noResults')}</p>`;
 }
 function allView(app) {
   app.innerHTML = `${header('library')}<main id="main">
-    <section class="lhero"><div class="wrap">${ornament}<h1>${t('lib.title')}</h1><p class="lead" style="margin-inline:auto">${t('lib.lead')}</p>${searchBox(t('lib.searchPh'))}</div></section>
+    <section class="lhero"><div class="wrap">${ornament}<h1>${t('lib.title')}</h1><p class="lead" style="margin-inline:auto">${t('lib.lead')}</p>${searchBox(t('lib.searchPh'))}${installSlot('lib')}</div></section>
     ${catTabs()}${continueCard()}<div class="wrap" id="shelves">${shelves()}</div></main>${footer()}`;
   const q = $('#q');
   q.addEventListener('input', () => { f.q = q.value; $('#shelves').innerHTML = shelves(); });
@@ -91,7 +95,7 @@ function cover(s, i) {
 }
 function card(s, i) {
   const meta = s.ready
-    ? `<span>${ic('book')}${t('story.chapters', { n: fnum(s.chapters || 5) })}</span><span>${ic('clock')}${t('story.minutes', { n: fnum(s.minutes) })}</span><span class="fr">${t('card.free', { n: fnum(freeCount(s)) })}</span>`
+    ? `<span>${ic('book')}${t('story.chapters', { n: fnum(s.chapters || 5) })}</span><span>${ic('clock')}${t('story.minutes', { n: fnum(s.minutes) })}</span><span class="fr">${freeText(freeCount(s), s.chapters)}</span>`
     : `<span class="soonlbl">${t('story.soon')}</span>`;
   return `<li><a class="card${s.ready ? '' : ' soon'}" href="#/story/${s.id}">${cover(s, i)}<div class="cbody">
       <div class="kicker">${eraName(s.era)}${s.trio ? ` · ${t('trio.' + s.trio)}` : ''}${s.kid && s.minAge ? ` · ${t('lib.age', { n: fnum(s.minAge) })}` : ''}</div>

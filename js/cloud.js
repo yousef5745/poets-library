@@ -9,7 +9,10 @@ import { setSubscriber } from './access.js';
 import { setCategories, category, DEFAULT_CATEGORY } from './categories.js';
 
 export const ALL_STORIES = STORIES.slice();          // admin sees hidden ones too
-const BASE = ALL_STORIES.map((s) => ({ id: s.id, ready: s.ready, freeChapters: s.freeChapters, portrait: s.portrait, category: s.category || DEFAULT_CATEGORY }));
+const BASE = ALL_STORIES.map((s) => ({ id: s.id, ready: s.ready, freeChapters: s.freeChapters, portrait: s.portrait, category: s.category || DEFAULT_CATEGORY, draft: !!s.draft }));
+// Draft stories (catalog `draft: true`) stay hidden until an admin row sets published = true.
+// Local preview only: localStorage.ps_dev_drafts = '1' on localhost.
+const devDrafts = () => { try { return auth.isLocal() && localStorage.getItem('ps_dev_drafts') === '1'; } catch (e) { return false; } };
 const CACHE = 'ps_public_v1';
 
 export const cloud = { profile: null, subs: [], ready: false };
@@ -47,7 +50,7 @@ export function applyStoryFlags(rows) {
     s.portrait = s.noCharImages ? null : b.portrait;
     s.ready = r.coming_soon ? false : b.ready;
     s.freeChapters = Number.isInteger(r.free_chapters) ? r.free_chapters : b.freeChapters;
-    s.hidden = r.published === false || c.published === false;
+    s.hidden = r.published === false || c.published === false || (b.draft && r.published !== true && !devDrafts());
     s.order = Number.isInteger(r.sort_order) ? r.sort_order : i;
   });
   const vis = ALL_STORIES.filter((s) => !s.hidden).sort((a, b) => a.order - b.order);

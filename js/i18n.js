@@ -17,6 +17,17 @@ export function t(key, vars) {
   return s;
 }
 
+// How many chapters of a story are free, as a phrase. kind: 'card' (مجانًا) or 'note' (… دون حساب).
+// n >= total: all free; 0: subscribers only.
+export function freeText(n, total, kind = 'card') {
+  const k = kind === 'note' ? 'freeN.' : 'free.';
+  if (total && n >= total) return t(k + 'all');
+  if (!n) return t(k + 'none');
+  if (n === 1) return t(k + '1');
+  if (n === 2) return t(k + '2');
+  return t(n <= 10 ? k + 'few' : k + 'many', { n });
+}
+
 // Arabic counted noun for pearls (لؤلؤة). Other locales can override with their own keys.
 export function pearlsWord(n) {
   if (n === 1) return t('pearls.1');

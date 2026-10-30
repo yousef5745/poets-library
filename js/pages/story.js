@@ -1,4 +1,5 @@
-import { t } from '../i18n.js';
+import { t, freeText } from '../i18n.js';
+import { DEFAULT_CATEGORY } from '../categories.js';
 import { ic, ornament } from '../icons.js';
 import { header, footer, esc, img, $ } from '../ui.js';
 import { storyMeta, eraName } from '../../content/catalog.js';
@@ -77,7 +78,7 @@ function draw(m, story, notes) {
           <div><dt>${t('sp.stVerses')}</dt><dd>${m.verses}</dd></div>
         </dl>
         <div class="actions">${primary}${run ? `<button class="btn ghost" data-a="restart">${ic('restart')}${t('sp.restart')}</button>` : ''}</div>
-        <p class="fine">${ic('book')}${t('story.freeNote')}</p>
+        <p class="fine">${ic('book')}${freeText(freeCount(m), chapters.length, 'note')}</p>
       </div>
     </section>
     <div class="sbody">
@@ -85,7 +86,7 @@ function draw(m, story, notes) {
       <aside class="sside">
         <div class="panel verse"><div class="kicker">${t('sp.verseHead')}</div>${ornament}<p class="bayt">${esc(m.verse[0])}</p><p class="bayt">${esc(m.verse[1])}</p><small>${esc(m.poet)}</small></div>
         <div class="panel"><h3>${t('sp.endings')} <small>${gotEnds}/${Object.keys(story.endings).length}</small></h3><ul class="ends">${ends}</ul></div>
-        <div class="panel"><h3>${t('sp.aboutPoet')}</h3><p>${esc(m.poetBio)}</p><p class="src"><b>${t('sp.sources')}:</b> ${esc(m.sources)}</p></div>
+        <div class="panel"><h3>${t((m.category || DEFAULT_CATEGORY) === 'poets' ? 'sp.aboutPoet' : 'sp.aboutStory')}</h3><p>${esc(m.poetBio)}</p><p class="src"><b>${t('sp.sources')}:</b> ${esc(m.sources)}</p></div>
         ${notes && notes.length ? `<div class="panel notes"><h3>${t('sp.history')}</h3><ul>${notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
       </aside>
     </div>

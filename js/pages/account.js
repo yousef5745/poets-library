@@ -7,7 +7,7 @@ import * as auth from '../auth.js';
 import { cloud, currentSub, subActive, refreshAccount, onCloud, ALL_STORIES } from '../cloud.js';
 import { S, saveNow } from '../store.js';
 import { CONFIG } from '../../config.js';
-import { sw, tag, confirm, empty } from '../dash-ui.js';
+import { sw, flip, tag, confirm, empty } from '../dash-ui.js';
 
 const A = (k, v) => t('acc2.' + k, v);
 const mods = {};          // story id -> loaded module (titles of chapters, endings, looks)
@@ -151,7 +151,7 @@ function draw() {
     <section class="acc-head">${avatar(name, 'acc-avatar', p && p.avatar != null ? p.avatar : auth.avatarUrl(u))}
       <div><span class="kicker">${t('acc.title')}</span><h1><bdi>${esc(name)}</bdi></h1><p class="fine"><bdi class="ltr">${esc(u.email || '')}</bdi></p>
         <p class="fine">${A('via.' + prov) !== 'acc2.via.' + prov ? A('via.' + prov) : A('via.google')} · ${A('since', { d: fmonthYear(since) })}</p></div>
-      <div class="hact">${sw(night, A('night'), A('night'), 'data-acc="theme"')}<button type="button" class="btn ghost sm" data-a="logout">${ic('logout')}<span>${A('logout')}</span></button></div></section>
+      <div class="hact">${sw(night, `${A('night')}: ${A('swOn')}`, `${A('night')}: ${A('swOff')}`, 'data-acc="theme"')}<button type="button" class="btn ghost sm" data-a="logout">${ic('logout')}<span>${A('logout')}</span></button></div></section>
     ${cc ? cc.html : ''}
     <div class="acc-grid"><aside class="acc-side" aria-label="${A('sideLabel')}">${subPanel()}${pearlsPanel()}</aside>
       <div class="acc-main">${progressRows()}${endingsCards()}${wardrobe()}</div></div>
@@ -164,7 +164,7 @@ function bind() {
   const app = $('#app');
   const onClick = async (e) => {
     const th = e.target.closest('[data-acc=theme]');
-    if (th) { S.prefs.theme = S.prefs.theme === 'night' ? 'day' : 'night'; saveNow(); applyTheme(S.prefs.theme); th.setAttribute('aria-checked', String(S.prefs.theme === 'night')); return; }
+    if (th) { S.prefs.theme = S.prefs.theme === 'night' ? 'day' : 'night'; saveNow(); applyTheme(S.prefs.theme); flip(th, S.prefs.theme === 'night'); return; }
     const w = e.target.closest('[data-wear]');
     if (w) { S.look = w.dataset.wear; saveNow(); toast(A('worn')); draw(); return; }
     const b = e.target.closest('[data-buy]');

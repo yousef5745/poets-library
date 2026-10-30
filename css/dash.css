@@ -57,11 +57,12 @@
 
 /* switch: square track with a lozenge knob (the ornament's diamond) */
 .sw{display:inline-flex;align-items:center;gap:10px;min-height:44px;font-size:var(--fs-ui);font-weight:700;color:var(--mut)}
-.sw i{position:relative;width:48px;height:26px;flex:none;border:1.5px solid var(--ink);background:var(--paper2);transition:background var(--t-fast)}
-.sw i::after{content:"";position:absolute;top:50%;inset-inline-start:5px;width:11px;height:11px;background:var(--mut);transform:translateY(-50%) rotate(45deg);transition:inset-inline-start var(--t-fast),background var(--t-fast)}
+.sw i{position:relative;width:50px;height:28px;flex:none;border:1.5px solid var(--ink);background:var(--paper2);transition:background var(--t-fast)}
+/* a real switch: a square thumb that slides to the "on" end, track filled when on */
+.sw i::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:19px;height:19px;background:var(--mut);transition:inset-inline-start var(--t-fast),background var(--t-fast)}
 .sw[aria-checked=true]{color:var(--ink)}
-.sw[aria-checked=true] i{background:var(--ink)}
-.sw[aria-checked=true] i::after{inset-inline-start:29px;background:var(--paper)}
+.sw[aria-checked=true] i{background:var(--acc);border-color:var(--acc)}
+.sw[aria-checked=true] i::after{inset-inline-start:25px;background:var(--paper)}
 .sw:hover i{outline:1px solid var(--ink);outline-offset:2px}
 .sw:disabled{cursor:not-allowed}.sw:disabled i{border-style:dashed;border-color:var(--mut)}
 .sw[aria-busy=true] i::after{animation:blink 1s steps(2) infinite}
@@ -389,3 +390,7 @@ body[data-theme=night] .acc-look.lock .fr img{filter:grayscale(.85) brightness(.
 .cattabs a small{color:inherit}
 .me-btn .me{max-width:9em}
 @media(max-width:699px){.me-btn .me{display:none}}
+
+/* admin numbers: sans with tabular digits (KPIs, axes, bar values, tables) */
+.adm-kpi dd,.adm-plot .adm-gl span,.adm-xax,.adm-hbars b,.adm-table td.tnum,.adm-legend b{font-family:var(--f-sans);font-variant-numeric:tabular-nums lining-nums}
+.adm-kpi dd{font-weight:600;letter-spacing:-.01em}

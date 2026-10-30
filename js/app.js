@@ -11,9 +11,11 @@ import legal from './pages/legal.js';
 import account from './pages/account.js';
 import admin from './pages/admin.js';
 import * as cloud from './cloud.js';
+import { initPWA } from './pwa.js';
 
 setLocale('ar');
 store.load();
+initPWA();
 
 const routes = [
   [/^\/?$/, () => library()],

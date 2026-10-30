@@ -103,7 +103,7 @@ function chartsHtml(s) {
   const last = wk[wk.length - 1] || { monthly: 0, yearly: 0 };
   const c2 = !any ? noData('subs', T('c.subs')) : chart('subs', T('c.subs'), T('c.weeks', { n: fnum(wk.length) }), T('c.subsAria', { y: fnum(last.yearly), m: fnum(last.monthly) }),
     `${gl([0, m2 / 4, m2 / 2, (m2 * 3) / 4, m2].map(Math.round), m2)}<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${pl('yearly')}" stroke="var(--ink)" stroke-width="2"/><polyline points="${pl('monthly')}" stroke="var(--acc)" stroke-width="2" stroke-dasharray="5 4"/></svg>`,
-    `<span>${T('c.week1')}</span><span>${T('c.weekN', { n: fnum(Math.ceil(wk.length / 2)) })}</span><span>${T('c.thisWeek')}</span>`,
+    `<span>${T('c.week1')}</span><span>${T('c.weekN', { n: fnum(Math.ceil(wk.length / 2)) })}</span><span>${T('c.today')}</span>`,
     `<span><i></i>${T('plan.yearly')} <b class="tnum">${fnum(last.yearly)}</b></span><span><i class="m"></i>${T('plan.monthly')} <b class="tnum">${fnum(last.monthly)}</b></span>`,
     { h: [T('c.week'), `${T('plan.yearly')} / ${T('plan.monthly')}`], r: wk.slice().reverse().map((w) => [fdate(w.w), `${fnum(w.yearly)} / ${fnum(w.monthly)}`]) });
   // 3. plays per story (horizontal bars from the right, top story in acc)
@@ -325,7 +325,7 @@ async function stories() {
   const by = Object.fromEntries(rows.map((r) => [r.story_id, r]));
   flags = ALL_STORIES.map((x, i) => {
     const r = by[x.id] || {};
-    return { story_id: x.id, category: r.category || x.category || DEFAULT_CATEGORY, published: r.published !== false, coming_soon: !!r.coming_soon,
+    return { story_id: x.id, category: r.category || x.category || DEFAULT_CATEGORY, published: r.published != null ? r.published !== false : !x.draft, coming_soon: !!r.coming_soon,
       free_chapters: Number.isInteger(r.free_chapters) ? r.free_chapters : (x.freeChapters ?? CONFIG.freeChaptersDefault), sort_order: Number.isInteger(r.sort_order) ? r.sort_order : i };
   }).sort((a, b) => a.sort_order - b.sort_order);
   orig = JSON.parse(JSON.stringify(flags));

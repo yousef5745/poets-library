@@ -62,6 +62,19 @@ export const STORIES = [
     verse: ['وَإِنَّ صَخراً لَتَأتَمُّ الهُداةُ بِهِ', 'كَأَنَّهُ عَلَمٌ في رَأسِهِ نارُ'],
     load: () => import('./khansa.js'),
   },
+  // DRAFT (prophets pilot, chapter 1 only): hidden from the library until an admin publishes it
+  // (stories_admin.published = true) and a scholar has reviewed the text. Dev preview on
+  // localhost only: localStorage.ps_dev_drafts = '1'.
+  {
+    id: 'nuh', ready: true, draft: true, category: 'prophets', noCharImages: true, kid: true, minAge: 6,
+    title: 'سَلْمى والسَّفينة', poet: 'نوحٌ عليه السلام', sub: 'قصّة نوحٍ عليه السلام للأطفال',
+    era: 'prophets', cover: 'nuh_village', portrait: null, chapters: 6, endings: 3, verses: 36, minutes: 50, freeChapters: 2,
+    synopsis: 'سَلْمى بنتٌ صغيرة من قريةٍ بعيدة، تُعيد عصفورًا إلى عشّه، وتجلس مع راعٍ فقير، وتعدّ النجوم مع جدّتها، ومن حولها يدعو نوحٌ عليه السلام قومه ليلًا ونهارًا. ثمّ ترى السفينة تعلو بين التلال، وتركبها مع المؤمنين والحيوانات زوجين زوجين، وتصبر على الموج حتى تستوي السفينة على الجوديّ، وتزرع نبتتها في الأرض الجديدة. وفي آخر الرحلة تتعلّم درسًا: الرحمة أو الصبر أو الإصغاء.',
+    poetBio: 'نوحٌ عليه السلام أوّل رسولٍ أرسله الله إلى أهل الأرض. كلامه في القصة منقولٌ بنصّ القرآن الكريم مع ذكر السورة والآية، وسلمى وجدّتها وعامر شخصيّات متخيَّلة.',
+    sources: 'القرآن الكريم: هود 25–49، نوح، المؤمنون 23–30، العنكبوت 14–15، القمر 9–17، الصافات 79؛ صحيح البخاري (4920، 3340)؛ صحيح مسلم (194)؛ قصص الأنبياء لابن كثير (ما لا خلاف فيه).',
+    verse: ['وَلَقَدْ أَرْسَلْنَا نُوحًا إِلَىٰ قَوْمِهِ', 'العنكبوت: ١٤'],
+    load: () => import('./nuh.js'),
+  },
   { id: 'imru', ready: false, title: 'الملك الضلّيل', poet: 'امرؤ القيس', sub: 'ثأرٌ لا يهدأ', era: 'jahili', cover: 'tent',
     synopsis: 'ابن ملك كندة، يبلغه مقتل أبيه وهو في لهوه، فيقضي ما بقي من عمره طالبًا ثأره.' },
   { id: 'majnun', ready: false, title: 'قيس وليلى', poet: 'قيس بن الملوّح', sub: 'مجنون ليلى', era: 'umayyad', cover: 'oasis',

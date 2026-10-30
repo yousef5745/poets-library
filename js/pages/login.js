@@ -19,11 +19,11 @@ const field = (id, label, type, ac, extra = '') => `<div class="fld" id="w_${id}
   <span class="emsg" id="${id}-e" hidden></span></div>`;
 
 function emailForm() {
-  const tabs = `<div class="seg" role="group" aria-label="${L('modeLabel')}"><button type="button" data-mode="in" aria-pressed="${mode === 'in'}">${L('tabIn')}</button><button type="button" data-mode="up" aria-pressed="${mode === 'up'}">${L('tabUp')}</button></div>`;
+  const tabs = `<div class="atabs" role="group" aria-label="${L('modeLabel')}"><button type="button" data-mode="in" aria-pressed="${mode === 'in'}">${L('tabIn')}</button><button type="button" data-mode="up" aria-pressed="${mode === 'up'}">${L('tabUp')}</button></div>`;
   if (mode === 'forgot') {
     return `<form class="emailf" id="emailf" novalidate><h2 class="eh">${L('forgotTitle')}</h2><p class="fine">${L('forgotLine')}</p>
       ${field('em', L('emailLabel'), 'email', 'email', `inputmode="email" required value="${esc(lastEmail)}"`)}
-      <button class="btn pri wide" type="submit">${ic('mail')}<span>${L('sendReset')}</span></button>
+      <button class="btn ghost wide" type="submit">${ic('mail')}<span>${L('sendReset')}</span></button>
       <button type="button" class="link" data-mode="in">${L('backToLogin')}</button></form>`;
   }
   const up = mode === 'up';
@@ -32,7 +32,7 @@ function emailForm() {
     ${field('em', L('emailLabel'), 'email', 'email', `inputmode="email" required value="${esc(lastEmail)}"`)}
     ${field('pw', L('pwLabel'), 'password', up ? 'new-password' : 'current-password', `required minlength="${up ? MIN : 1}"`)}
     ${up ? `<span class="hint fine">${L('pwHint', { n: MIN })}</span>` : `<button type="button" class="link forgot" data-mode="forgot">${L('forgot')}</button>`}
-    <button class="btn pri wide" type="submit">${ic(up ? 'user' : 'lock')}<span>${up ? L('signUp') : L('signIn')}</span></button></form>`;
+    <button class="btn ghost wide" type="submit">${ic(up ? 'user' : 'lock')}<span>${up ? L('signUp') : L('signIn')}</span></button></form>`;
 }
 
 function resetBox() {
@@ -67,9 +67,9 @@ export default function login(view) {
       ${auth.lastNotice() === 'link_other_browser' ? `<p class="notice" role="status">${ic('check')}${L('otherBrowser')}</p>` : ''}
       <div class="providers">
         ${prov.includes('google') ? `<button class="gsi" data-l="google"><span class="gsi-in">${GOOGLE_G}<span class="gsi-t">${L('google')}</span></span></button>` : ''}
+        <p class="guest">${L('guest')} <a href="#/">${L('guestLink')}</a></p>
         ${others.map((p) => `<button class="sbtn" data-l="${p}">${p === 'facebook' ? FB_LOGO : X_LOGO}<span>${L(p)}</span></button>`).join('')}
         ${email ? `<div class="or"><span>${L('orEmail')}</span></div><div id="ebox">${magic ? '' : emailForm()}</div>` : ''}
-        <p class="guest">${L('guest')} <a href="#/">${L('guestLink')}</a></p>
       </div>
       <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
       <p class="fine">${L('terms')}</p>`;
@@ -78,7 +78,7 @@ export default function login(view) {
     <div class="authart" style="background-image:url(${img('tent')})">
       <figure class="aaq"><blockquote><p>هَلَّا سَأَلْتِ الخَيْلَ يَا ابْنَةَ مَالِكٍ</p><p>إِنْ كُنْتِ جَاهِلَةً بِمَا لَمْ تَعْلَمِي</p></blockquote><figcaption>عنترة بن شدّاد</figcaption></figure>
     </div>
-    <section class="authbox dash"><div class="kicker">${t('site.name')}</div>${box}</section>
+    <section class="authbox dash">${box}</section>
   </main>${footer()}`;
 
   const root = $('#app');

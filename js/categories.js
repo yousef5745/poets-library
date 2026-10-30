@@ -2,10 +2,12 @@
 // defaults used before the table exists or when offline. A story without a category
 // belongs to 'poets'. Names are per-locale objects so more languages can be added later.
 export const DEFAULT_CATEGORY = 'poets';
+// prophets: every story text is reviewed by a scholar (طالب علم أو شيخ) before it is published;
+// new stories enter the catalog as `draft: true` (hidden) until then.
 export const CATEGORIES = [
   { slug: 'poets', name: { ar: 'شعراء' }, description: { ar: 'حكايات من سِيَر الشعراء، بأبياتهم الثابتة في دواوينهم.' }, sort_order: 1, icon: 'quill', cover: 'camp', accent: 'poets', ornament: 'lozenge', published: true, no_character_images: false, kid_friendly: false, min_age: null },
   { slug: 'kids', name: { ar: 'قصص أطفال' }, description: { ar: 'حكايات قصيرة بلغة سهلة، تُقرأ مع الصغار أو يقرؤونها وحدهم.' }, sort_order: 2, icon: 'heart', cover: null, accent: 'kids', ornament: 'circles', published: true, no_character_images: false, kid_friendly: true, min_age: 6 },
-  { slug: 'prophets', name: { ar: 'قصص الأنبياء' }, description: { ar: 'تُروى من القرآن الكريم وكتب التفسير والسيرة، دون تصوير للأنبياء أو لأيّ شخصية.' }, sort_order: 3, icon: 'book', cover: null, accent: 'prophets', ornament: 'star8', published: true, no_character_images: true, kid_friendly: false, min_age: null },
+  { slug: 'prophets', name: { ar: 'قصص الأنبياء' }, description: { ar: 'قصصٌ مستندةٌ إلى القرآن الكريم والسنّة الصحيحة، يرويها طفلٌ متخيَّل من القوم. لا تُصوِّر نبيًّا ولا صحابيًّا ولا ملَكًا، وكلامُ الأنبياء فيها بنصّ الآيات.' }, sort_order: 3, icon: 'book', cover: null, accent: 'prophets', ornament: 'star8', published: true, no_character_images: true, kid_friendly: false, min_age: null },
   { slug: 'novels', name: { ar: 'روايات' }, description: { ar: 'روايات تفاعلية أطول، بفصولٍ ونهاياتٍ متعدّدة.' }, sort_order: 4, icon: 'flag', cover: null, accent: 'novels', ornament: 'rule', published: true, no_character_images: false, kid_friendly: false, min_age: null },
 ];
 export const ALL_CATEGORIES = CATEGORIES.slice();   // admin view, includes hidden ones

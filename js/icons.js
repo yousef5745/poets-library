@@ -32,6 +32,9 @@ const P = {
   plus: '<path d="M12 5v14M5 12h14"/>', minus: '<path d="M5 12h14"/>',
   robe: '<path d="M9 3.5h6l4.5 3-2 4-1.5-1V20.5H8V9.5l-1.5 1-2-4z"/><path d="M12 3.5v4"/>',
   home: '<path d="M4 11l8-6.5 8 6.5"/><path d="M6.5 9.5v10h11v-10"/>',
+  more: '<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>',
+  download: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
+  share: '<path d="M12 15V4M8 7.5L12 3.5l4 4"/><path d="M8 10.5H5.5v10h13v-10H16"/>',
   restart: '<path d="M5 12a7 7 0 1 0 2-5"/><path d="M5 4v4h4"/>',
 };
 export function ic(name, cls = 'ic') {

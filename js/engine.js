@@ -1,7 +1,7 @@
 /* Story engine (ported from the game's game.js, logic only, no DOM).
    Node:   {bg, steps:[...], choices:[...] | next:'id' | route:[...] | chapterEnd:'nextChapterId' | ending:'id'}
    Step:   {n:'narration'} | {c:'char', t:'line', e:'expression'} | {v:['sadr','ajuz'], by:'poet'}
-           | {show:{char:'l|c|r'}} | {hide:'char'} | {fx:{...}}
+           | {show:{char:'l|c|r' or 'l:pose'}} | {pose:{char:'pose'|'n'}} | {hide:'char'} | {fx:{...}}
    Choice: {t:'text', to:'id', gem:cost, req:{fur:n, fas:n}, fx:{fur, fas, rel:{who:n}, flag:'x', pearls:n, toast:'msg'}}
    Route:  [{if:{rel:{abla:5}, fur:3, flag:'camels'}, to:'id'}, {to:'default'}]            */
 
