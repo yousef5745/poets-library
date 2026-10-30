@@ -77,12 +77,15 @@ function makeReader(meta, mod) {
     el.dataset.pos = pos;
     requestAnimationFrame(() => el.classList.add('on'));
     run.stage[id] = pos;
+    countSpr();
   }
   function hideSpr(id) {
     const el = document.getElementById('sp_' + id);
     if (el) { el.classList.remove('on'); setTimeout(() => el.remove(), 350); }
     delete run.stage[id];
+    countSpr();
   }
+  function countSpr() { const b = $('#sprs'); if (b) b.dataset.n = Math.min(3, Object.keys(run.stage).length) || 1; }
   function focus(id) {
     for (const k in run.stage) { const el = document.getElementById('sp_' + k); if (el) { el.classList.toggle('dim', !!id && k !== id); el.classList.toggle('talk', k === id); } }
   }
@@ -99,11 +102,12 @@ function makeReader(meta, mod) {
     if (!rm || !st) return;
     if (matchMedia('(orientation:landscape) and (max-height:520px)').matches) { st.style.height = ''; return; }
     const H = rm.clientHeight, desk = innerWidth >= 1024;
-    st.style.setProperty('--spr-h', Math.round(H * (desk ? 0.8 : 0.64)) + 'px');
+    // Keep a picture-like frame: never taller than 16:9 on desktop or 5:4 on phones and tablets, nor 55% of the screen.
+    const cap = Math.min(st.clientWidth * (desk ? 0.5625 : 0.8), innerHeight * 0.55);
     const m = $('#reader').dataset.mode;
-    if (m === 'intro') { st.style.height = Math.round(H * (desk ? 0.62 : 0.6)) + 'px'; return; }
+    if (m === 'intro') { st.style.height = Math.round(Math.min(cap, H * (desk ? 0.62 : 0.6))) + 'px'; return; }
     const c = ui.firstElementChild ? ui.firstElementChild.offsetHeight + 40 : 0;
-    const lo = H * (desk ? 0.36 : 0.30), hi = H * (desk ? 0.64 : 0.72);
+    const lo = Math.min(cap, H * (desk ? 0.36 : 0.30)), hi = Math.min(cap, H * (desk ? 0.64 : 0.72));
     st.style.height = Math.round(Math.max(lo, Math.min(hi, H - c - 24))) + 'px';
   }
   function headerInfo() {

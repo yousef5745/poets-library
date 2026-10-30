@@ -21,9 +21,12 @@ body.in-reader{overflow:hidden;background:var(--paper)}
 .stage{position:relative;flex:none;height:var(--stage-h);min-height:150px;margin:10px;outline:1px solid var(--ink);outline-offset:4px;overflow:hidden;container-type:size;background:#3a2f22;transition:height var(--t) ease;cursor:pointer}
 .stage .bg{position:absolute;inset:0;background:center/cover;opacity:0;transition:opacity .6s}
 #sprs{position:absolute;inset:0}
-.spr{position:absolute;top:12px;height:var(--spr-h,190cqh);width:auto;max-width:none;left:50%;transform:translateX(-50%);opacity:0;transition:opacity var(--t),filter var(--t),left .5s ease;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));pointer-events:none}
+/* bust sprites stand on the stage floor: about 88% of the stage height, capped by width so two or three fit side by side */
+#sprs{--spr-w:64cqw}#sprs[data-n="2"]{--spr-w:56cqw}#sprs[data-n="3"]{--spr-w:46cqw}
+.spr{position:absolute;bottom:0;height:min(88cqh,var(--spr-w));width:auto;max-width:none;left:50%;transform:translateX(-50%);opacity:0;transition:opacity var(--t),filter var(--t),left .5s ease;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));pointer-events:none}
 .spr.on{opacity:1}
 .spr[data-pos=l]{left:27%}.spr[data-pos=c]{left:50%}.spr[data-pos=r]{left:73%}
+#sprs[data-n="3"] .spr[data-pos=l]{left:22%}#sprs[data-n="3"] .spr[data-pos=r]{left:78%}
 .spr.dim{filter:brightness(.55) saturate(.75)}
 .spr.talk{z-index:2}
 .panel-r{flex:1;min-height:0;overflow-y:auto;padding:6px 10px calc(14px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
@@ -111,6 +114,6 @@ body.in-reader{overflow:hidden;background:var(--paper)}
   .rmain{flex-direction:row}
   .stage,.reader[data-mode] .stage{height:auto;width:44%;margin:8px}
   .panel-r{padding-top:8px}
-  .spr{height:150cqh;top:5cqh}
+  .spr{height:min(92cqh,var(--spr-w))}
   .rtop{padding-block:4px}
 }
