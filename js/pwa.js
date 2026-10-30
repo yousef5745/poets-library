@@ -9,8 +9,19 @@ let deferred = null;
 const ua = () => navigator.userAgent || '';
 export const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const isIOS = () => /iphone|ipad|ipod/i.test(ua()) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const isIOSSafari = () => isIOS() && /safari/i.test(ua()) && !/crios|fxios|edgios|opios/i.test(ua());
+export const isIOSSafari = () => isIOS() && /safari/i.test(ua()) && !/crios|fxios|edgios|opios/i.test(ua());
 export const canInstall = () => !isStandalone() && (!!deferred || isIOSSafari());
+export const hasPrompt = () => !!deferred;
+// The browser's own install prompt (Android / desktop Chrome and Edge). Resolves to its outcome.
+export async function promptInstall() {
+  if (!deferred) return 'unavailable';
+  const d = deferred; deferred = null;
+  d.prompt();
+  let out = 'dismissed';
+  try { out = (await d.userChoice).outcome || out; } catch (e) {}
+  refresh(); dispatchEvent(new CustomEvent('ps:installable'));
+  return out;
+}
 
 export const installSlot = (cls = '') => `<span class="install-slot ${cls}" data-install-slot>${installBtn()}</span>`;
 function installBtn() {
@@ -19,18 +30,13 @@ function installBtn() {
 function refresh() { document.querySelectorAll('[data-install-slot]').forEach((el) => { el.innerHTML = installBtn(); }); }
 
 export function initPWA() {
-  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; refresh(); });
+  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; refresh(); dispatchEvent(new CustomEvent('ps:installable')); });
   addEventListener('appinstalled', () => { deferred = null; refresh(); });
   new MutationObserver(() => { const s = document.querySelector('[data-install-slot]:empty'); if (s && canInstall()) refresh(); })
     .observe(document.getElementById('app'), { childList: true });
   document.addEventListener('click', async (ev) => {
     if (!ev.target.closest('[data-a=install]')) return;
-    if (deferred) {
-      const d = deferred; deferred = null;
-      d.prompt();
-      try { await d.userChoice; } catch (e) { /* dismissed */ }
-      refresh();
-    } else if (isIOSSafari()) {
+    if (deferred) await promptInstall(); else if (isIOSSafari()) {
       sheet(`<h2>${t('pwa.iosTitle')}</h2><ol class="ios-steps"><li>${t('pwa.ios1', { icon: ic('share') })}</li><li>${t('pwa.ios2')}</li><li>${t('pwa.ios3')}</li></ol>
         <button class="btn pri wide" data-a="sheet-close">${t('r.ok')}</button>`, { cls: 'ios-hint' });
     }

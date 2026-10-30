@@ -247,3 +247,29 @@ details p{color:var(--mut);padding-bottom:12px}
 @media(min-width:900px){.auth.has-scs .authart{display:block}.auth.has-scs{align-content:start}.auth > .showc{padding-inline:28px}}
 .acc > .showc{margin-bottom:4px}
 .showc [hidden]{display:none}
+/* Legal pages: one readable column, numbered sections, contents box, links to the other documents */
+.legal{padding-top:28px}
+.ltabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:24px}
+.ltabs a{padding:8px 12px;text-decoration:none;color:var(--mut);font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ltabs a[aria-current]{color:var(--ink);border-color:var(--acc)}
+.ldoc{max-width:46rem;margin-inline:auto;font-size:17px;line-height:1.95}
+.lhead{border-bottom:3px double var(--ink);padding-bottom:14px;margin-bottom:18px}
+.legal .lhead h1{font-size:clamp(28px,4.4vw,40px);margin-bottom:6px}
+.lupd{color:var(--mut);font-size:15px}
+.lintro{font-size:18px;margin-bottom:20px}
+.ltoc{border:1px solid var(--line);background:var(--paper2);padding:14px 18px;margin-bottom:28px}
+.ltoc h2{font-size:17px;margin-bottom:6px;font-family:var(--f-ui)}
+.ltoc ol{margin:0;padding-inline-start:22px;columns:2 14rem;column-gap:28px;font-size:16px}
+.ltoc a{color:var(--ink)}
+.lsec{padding-top:6px;margin-bottom:22px;scroll-margin-top:80px}
+.lsec h2{font-size:22px;margin-bottom:8px}
+.lsec h2:focus{outline:0}
+.lnum{color:var(--acc);font-variant-numeric:tabular-nums}
+.lsec p{margin-bottom:10px}
+.lsec ul{margin:0 0 10px;padding-inline-start:22px}
+.ldoc a{color:var(--acc)}
+.lfoot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px}
+.lfoot h2{font-size:17px;font-family:var(--f-ui);margin-bottom:4px}
+.lfoot ul{margin:0;padding-inline-start:22px}
+.legal-links{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--mut)}
+.legal-links a{color:var(--mut)}

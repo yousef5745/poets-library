@@ -77,7 +77,7 @@ export default function login(view, gateFor) {
         ${email ? `<div class="or"><span>${L('orEmail')}</span></div><div id="ebox">${magic ? '' : emailForm()}</div>` : ''}
       </div>
       <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
-      <p class="fine">${L('terms')}</p>
+      <p class="fine legal-links">${t('legal.loginLine', { terms: `<a href="#/legal/terms">${t('foot.terms')}</a>`, privacy: `<a href="#/legal/privacy">${t('foot.privacy')}</a>` })}</p>
       ${gate ? `<a class="link gateback" href="#/story/${gate.meta.id}">${ic('back')}${L('gateBack')}</a>` : ''}`;
 
   const gm = gate && gate.meta;

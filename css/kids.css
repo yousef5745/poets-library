@@ -1,0 +1,111 @@
+/* Audience switch + first-visit onboarding (both looks), then the kids look:
+   html[data-aud=kids] (js/audience.js). Flat colours only, no gradients, no emoji.
+   Contrast (WCAG AA) on --paper #fff7e8: ink #2b2140 14.1:1, mut #5b4a6e 7.4:1, acc #b93d0a 5.3:1
+   (white on acc 5.6:1), teal #0f6b63 6.0:1. Night theme (body[data-theme=night]) still wins. */
+
+/* ---------- «للكبار | للأطفال» switch (header menu, account) ---------- */
+.audsw{display:inline-flex;border:1.5px solid var(--ink);align-self:flex-start;flex:none}
+.audsw button{min-height:40px;padding:4px 14px;font-weight:700;font-size:15px;color:var(--mut)}
+.audsw button.on{background:var(--ink);color:var(--paper)}
+.audsw button:not(.on):hover{color:var(--ink)}
+.nav .navaud{margin-inline-start:6px;align-self:center}
+@media(max-width:699px){.nav .navaud{margin:12px 0 4px;align-self:flex-start}.nav .navaud button{min-height:44px;font-size:17px}}
+.acc-read .accaud{margin-bottom:2px}
+.acc-audhint{display:block;font-size:13px}
+
+/* ---------- onboarding ---------- */
+html.onb-open,html.onb-open body{overflow:hidden}
+#onb{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(33,27,20,.55)}
+.onb-box{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);outline:1px solid var(--ink);outline-offset:-7px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:16px}
+.onb-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.onb-dots{display:flex;gap:8px;margin:0;padding:0;list-style:none}
+.onb-dots li{width:26px;height:6px;background:var(--line)}
+.onb-dots li.done{background:var(--mut)}.onb-dots li.on{background:var(--acc)}
+.onb-skip{min-height:44px;padding:0 6px;color:var(--mut);font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.onb-body{display:flex;flex-direction:column;gap:12px}
+.onb-body h2{font-size:clamp(26px,6vw,34px);outline:0}
+.onb-lead{color:var(--mut);font-size:16px}
+.onb-auds{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.onb-aud{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px 14px;border:1.5px solid var(--ink);background:var(--paper2);text-align:center;min-height:200px}
+.onb-aud svg{width:100%;max-width:150px;height:auto}
+.onb-aud b{font-family:var(--f-read);font-size:21px;line-height:1.3}
+.onb-aud span{color:var(--mut);font-size:14px;line-height:1.5}
+.onb-aud:hover{border-color:var(--acc)}
+.onb-aud.on{outline:3px solid var(--acc);outline-offset:2px}
+.onb-aud[data-v=kids]{border-radius:18px;background:#fff3dc}
+.onb-aud[data-v=kids] b{font-family:Cairo,var(--f-ui);color:#7a2a06}
+.onb-prev{border:1px solid var(--line);background:var(--paper2);padding:14px 16px}
+.onb-sample{font-family:var(--f-story);font-size:var(--read-size);line-height:var(--read-lh)}
+.onb-nav{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.onb-nav .btn{min-width:120px}
+.onb-nav .btn:disabled{opacity:.45;cursor:default}
+.onb-appic{display:flex;justify-content:center}.onb-appic img{width:72px;height:72px;border:1px solid var(--line)}
+.onb-body .ios-steps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px;font-size:16px}
+.onb-body .ios-steps .ic{width:18px;height:18px;vertical-align:-3px}
+@media(max-width:420px){.onb-auds{grid-template-columns:1fr}.onb-aud{min-height:0;flex-direction:row;text-align:start;align-items:center}.onb-aud svg{width:96px;flex:none}.onb-aud b,.onb-aud span{display:block}}
+
+/* ---------- the kids look ---------- */
+html[data-aud=kids]{
+  --paper:#fff7e8; --paper2:#ffffff; --paper3:#ffe8c2;
+  --line:#efd3a6; --ink:#2b2140; --mut:#5b4a6e; --acc:#b93d0a; --acc-ink:#fff;
+  --f-ui:Cairo,'Noto Naskh Arabic',sans-serif; --f-kicker:Cairo,'Noto Naskh Arabic',sans-serif;
+  --k-sun:#f6c343; --k-cloud:#ffffff; --k-teal:#0f6b63; --k-r:18px;
+  --tap:52px; --choice-h:62px;
+}
+html[data-aud=kids] body{font-size:18px}
+html[data-aud=kids] h1,html[data-aud=kids] h2,html[data-aud=kids] h3{font-family:Cairo,var(--f-read);font-weight:700}
+html[data-aud=kids] .btn{border-radius:999px;border-width:2px;padding-inline:24px}
+html[data-aud=kids] .btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+html[data-aud=kids] .btn.pri:hover{background:var(--ink);border-color:var(--ink)}
+html[data-aud=kids] .iconbtn{border-radius:14px}
+html[data-aud=kids] .top{border-bottom:0;box-shadow:0 3px 0 var(--paper3)}
+html[data-aud=kids] .top .navbtn,html[data-aud=kids] .top .topact .btn{border-radius:999px}
+html[data-aud=kids] .nav a[href="#/pricing"]{display:none}          /* simpler menu: library + account */
+html[data-aud=kids] .audsw{border-radius:999px;overflow:hidden;border-color:var(--acc)}
+html[data-aud=kids] .audsw button.on{background:var(--acc);color:#fff}
+html[data-aud=kids] .foot{border-top:0;box-shadow:0 -3px 0 var(--paper3)}
+/* home */
+html[data-aud=kids] .kidshero{background:#ffe9bf;border-bottom:0;padding-bottom:28px;border-radius:0 0 40px 40px}
+html[data-aud=kids] .kidsart{width:min(320px,86vw);height:auto}
+html[data-aud=kids] .kidshero h1{font-size:clamp(34px,7vw,56px);color:var(--ink)}
+html[data-aud=kids] .kidshero .lead{color:var(--ink)}
+html[data-aud=kids] .search input{border-radius:999px;border:2px solid var(--ink);background:#fff}
+html[data-aud=kids] .cattabs{background:var(--paper);border-bottom:0}
+html[data-aud=kids] .cattabs ul{gap:8px;padding:10px 0}
+html[data-aud=kids] .cattabs a{border:2px solid var(--line);border-radius:999px;margin:0;min-height:46px;background:#fff;color:var(--ink)}
+html[data-aud=kids] .cattabs a[aria-current]{border-color:var(--cat);background:var(--cat);color:#fff;box-shadow:none}
+html[data-aud=kids] .cattabs a[aria-current] .sw8{background:#fff}
+html[data-aud=kids] .shelfhead{border-bottom:3px dotted var(--cat)}
+html[data-aud=kids] .shelfhead h2{font-size:clamp(24px,3vw,32px)}
+html[data-aud=kids] .bk .cv{border-radius:var(--k-r);outline:3px solid var(--cat);outline-offset:4px}
+html[data-aud=kids] .bk b{font-family:Cairo,var(--f-read);font-size:19px}
+html[data-aud=kids] .rack{grid-auto-columns:62%}
+@media(min-width:700px){html[data-aud=kids] .rack{grid-auto-columns:auto}}
+html[data-aud=kids] .contcard{border-radius:var(--k-r);border:2px solid var(--ink);background:#fff}
+html[data-aud=kids] .contcard img{border-radius:12px}
+html[data-aud=kids] .card .cov,html[data-aud=kids] .sart{border-radius:var(--k-r);overflow:hidden}
+html[data-aud=kids] .panel{border-radius:var(--k-r);border-width:2px}
+html[data-aud=kids] .chip{border-radius:999px}
+html[data-aud=kids] .chip.on{border:2px solid var(--acc);background:#fff}
+/* slider + chips */
+html[data-aud=kids] .scs-chip{border-radius:999px;border-width:2px;background:#fff}
+html[data-aud=kids] .scs-cat{border-radius:999px;padding:0 8px}
+html[data-aud=kids] .showc{border-bottom:3px dotted var(--line)}
+/* sign-in page */
+html[data-aud=kids] .authart{border-radius:var(--k-r);outline-width:2px}
+html[data-aud=kids] .emailf input{border-radius:12px;border:2px solid var(--line)}
+html[data-aud=kids] .gsi{border-radius:999px}
+/* onboarding in the kids look */
+html[data-aud=kids] .onb-box{border-radius:24px;outline:0;border:3px solid var(--acc)}
+html[data-aud=kids] .onb-dots li{border-radius:999px}
+html[data-aud=kids] .onb-prev{border-radius:16px}
+/* reader: softer chrome, rounder panels (text size +2px comes from ui.js applyReadSize) */
+html[data-aud=kids] .dlg{border-radius:22px;border-width:2px}
+html[data-aud=kids] .dlg::before{border-radius:16px;border-style:dashed}
+html[data-aud=kids] .dlg.verse{border-radius:22px;border:3px solid var(--acc)}
+html[data-aud=kids] .choices{border-radius:22px;border-width:2px}
+html[data-aud=kids] .choice{border-radius:16px;border-width:2px}
+html[data-aud=kids] .choice .k{font-family:Cairo,var(--f-story)}
+html[data-aud=kids] .rtop .iconbtn,html[data-aud=kids] .pearls{border-radius:999px}
+html[data-aud=kids] .sheet-box{border-radius:24px 24px 0 0}
+@media(min-width:700px){html[data-aud=kids] .sheet-box{border-radius:24px}}

@@ -3,7 +3,7 @@
 //   deploy, cached copy when offline); images, fonts and audio are cache-first once seen.
 // - never cached: anything cross-origin except the Supabase SDK on jsDelivr (Supabase REST/auth,
 //   Lemon Squeezy, Google sign-in), non-GET requests, and URLs carrying an auth code or token.
-const VERSION = '72421930b0';
+const VERSION = '9ec30a3293';
 const SHELL = `hikaya-shell-${VERSION}`, MEDIA = 'hikaya-media-v1', LIB = 'hikaya-lib-v1';
 const SHELL_FILES = [
  "./",
@@ -32,6 +32,7 @@ const SHELL_FILES = [
  "css/base.css",
  "css/categories.css",
  "css/dash.css",
+ "css/kids.css",
  "css/pages.css",
  "css/reader.css",
  "css/tokens.css",
@@ -40,6 +41,7 @@ const SHELL_FILES = [
  "js/access.js",
  "js/admin-api.js",
  "js/app.js",
+ "js/audience.js",
  "js/audio.js",
  "js/auth.js",
  "js/categories.js",

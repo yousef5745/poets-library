@@ -9,12 +9,16 @@ import { esc } from './ui.js';
 import { STORIES } from '../content/catalog.js';
 import { CATEGORIES, DEFAULT_CATEGORY, catName, category, accentOf } from './categories.js';
 import { bookCover } from './pages/library.js';
+import { orderCats } from './audience.js';
 
 const AUTO_MS = 4500;
 let nid = 0;
 
 export function showcase() {
-  const list = STORIES.filter((s) => s.ready).concat(STORIES.filter((s) => !s.ready));
+  const order = orderCats(CATEGORIES).map((c) => c.slug);
+  const rank = (s) => { const i = order.indexOf(s.category || DEFAULT_CATEGORY); return i < 0 ? 99 : i; };
+  const sorted = STORIES.slice().sort((a, b) => rank(a) - rank(b));   // kids: kids' + prophets' stories first
+  const list = sorted.filter((s) => s.ready).concat(sorted.filter((s) => !s.ready));
   if (!list.length) return '';
   const id = 'scs' + (++nid);
   const card = (s, i) => {
@@ -24,7 +28,7 @@ export function showcase() {
         <b>${esc(s.title)}</b><span class="scs-tags"><span class="scs-cat">${esc(catName(c))}</span>${s.underReview ? `<span class="revtag">${t('rev.badge')}</span>` : ''}${s.ready ? '' : `<span class="scs-soon">${t('story.soon')}</span>`}</span></a></li>`;
   };
   const n = (slug) => STORIES.filter((s) => (s.category || DEFAULT_CATEGORY) === slug).length;
-  const cats = CATEGORIES.map((c) => `<li data-cat="${accentOf(c)}"><a class="scs-chip" href="#/c/${c.slug}"><span class="sw8"></span>${esc(catName(c))}<small class="tnum">${n(c.slug) ? fnum(n(c.slug)) : t('story.soon')}</small></a></li>`).join('');
+  const cats = orderCats(CATEGORIES).map((c) => `<li data-cat="${accentOf(c)}"><a class="scs-chip" href="#/c/${c.slug}"><span class="sw8"></span>${esc(catName(c))}<small class="tnum">${n(c.slug) ? fnum(n(c.slug)) : t('story.soon')}</small></a></li>`).join('');
   return `<section class="showc" id="${id}" aria-roledescription="${t('scs.carousel')}" aria-labelledby="${id}-h">
     <div class="scs-head"><div><span class="kicker">${t('scs.kicker')}</span><h2 id="${id}-h">${t('scs.title')}</h2></div>
       <div class="scs-ctl"><button type="button" class="iconbtn scs-pause" data-scs="pause" aria-pressed="false" aria-label="${t('scs.pause')}" hidden>${ic('pause')}</button>

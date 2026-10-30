@@ -9,6 +9,7 @@ import { S, saveNow, setPref } from '../store.js';
 import { CONFIG } from '../../config.js';
 import { sw, flip, tag, confirm, empty } from '../dash-ui.js';
 import { showcase, bindShowcase } from '../showcase.js';
+import { audSwitch } from '../audience.js';
 
 const A = (k, v) => t('acc2.' + k, v);
 const mods = {};          // story id -> loaded module (titles of chapters, endings, looks)
@@ -71,7 +72,7 @@ function pearlsPanel() {
 
 // Reading settings: the same font + text-size controls as the reader's ⋯ menu (saved with the wallet prefs).
 function readPanel() {
-  return `<section class="panel acc-read" aria-labelledby="h-rd"><h3 id="h-rd">${t('r.settings')}</h3><p class="fine">${t('r.fontFamily')}</p>${fontControl(S.prefs.font, 'data-fs')}<p class="fine">${t('r.textSize')}</p>${sizeControl(S.prefs.size, 'data-fs')}</section>`;
+  return `<section class="panel acc-read" aria-labelledby="h-rd"><h3 id="h-rd">${t('r.settings')}</h3><p class="fine">${t('aud.label')}</p>${audSwitch('data-a', 'accaud')}<p class="fine acc-audhint">${t('aud.accHint')}</p><p class="fine">${t('r.fontFamily')}</p>${fontControl(S.prefs.font, 'data-fs')}<p class="fine">${t('r.textSize')}</p>${sizeControl(S.prefs.size, 'data-fs')}</section>`;
 }
 
 // ------------------------------------------------------------ main column
@@ -171,6 +172,7 @@ function paint() {
     <div class="acc-grid"><aside class="acc-side" aria-label="${A('sideLabel')}">${subPanel()}${pearlsPanel()}${readPanel()}</aside>
       <div class="acc-main">${progressRows()}${endingsCards()}${wardrobe()}</div></div>
     <p class="fine" style="margin-top:24px">${ic(p ? 'check' : 'lock')}${p ? t('acc.sync') : t('acc.noSync')}</p>
+    <nav class="legal-links acc-legal" aria-label="الصفحات القانونية" style="margin-top:20px"><a href="#/legal/payment">${t('foot.payment')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a></nav>
     <div class="acc-signout" style="margin-top:24px"><button type="button" class="btn ghost" data-a="logout">${ic('logout')}${A('logout')}</button></div>
   </main>${cc ? `<div class="stickycta acc-cta"><div class="wrap"><a class="btn pri" href="#/read/${cc.s.id}">${ic('play')}${A('continueNamed', { s: esc(cc.s.title) })}</a></div></div>` : ''}${footer()}`;
 }

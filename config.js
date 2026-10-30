@@ -31,6 +31,9 @@ export const CONFIG = {
     testMode: true,
   },
 
+  // Legal pages (js/pages/legal.js). contactEmail: the public address for privacy, refund and
+  // rights requests.
+  legal: { contactEmail: 'Yousef_jodah@hotmail.com', updated: '2026-10-30' },
   plans: {
     monthly: { price: '3.99', currency: 'USD' },
     yearly:  { price: '29.99', currency: 'USD', perMonth: '2.50', savePct: 37 },

@@ -3,6 +3,7 @@ import { ic } from './icons.js';
 import { currentUser, displayName, avatarUrl } from './auth.js';
 import { isAdmin } from './cloud.js';
 import { installSlot } from './pwa.js';
+import { audSwitch } from './audience.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -23,6 +24,7 @@ export function header(active) {
         ${link('#/pricing', 'nav.pricing', 'pricing')}
         ${u ? link('#/account', 'nav.account', 'account') : ''}
         ${u && isAdmin() ? link('#/admin', 'nav.admin', 'admin') : ''}
+        ${audSwitch('data-a', 'navaud')}
       </nav>
       <div class="topact">
         ${u ? `<a class="btn ghost sm me-btn" href="#/account" aria-label="${t('nav.account')}">${ic('user')}<bdi class="me">${esc(displayName(u).split(' ')[0])}</bdi></a>`
@@ -50,7 +52,9 @@ export const READ_SIZES = { s: 19, m: 22, l: 25, xl: 29 };
 export const READ_STEPS = ['s', 'm', 'l', 'xl'];
 export function applyReadSize(size) {
   const k = READ_SIZES[size] ? size : 'm';
-  document.documentElement.style.setProperty('--read-size', READ_SIZES[k] + 'px');
+  // kids mode (html[data-aud=kids], js/audience.js) reads 2px larger at every step
+  const kids = document.documentElement.dataset.aud === 'kids' ? 2 : 0;
+  document.documentElement.style.setProperty('--read-size', READ_SIZES[k] + kids + 'px');
   document.documentElement.dataset.rsize = k;
   return k;
 }
@@ -95,7 +99,7 @@ export function applyTheme(theme) {
 export function footer() {
   return `<footer class="foot"><div class="wrap footin">
     <div>${brand()}<p>${t('foot.about')}</p></div>
-    ${installSlot()}<nav class="flinks"><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a></nav>
+    ${installSlot()}<nav class="flinks"><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a><a href="#/legal/payment">${t('foot.payment')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a></nav>
   </div></footer>`;
 }
 

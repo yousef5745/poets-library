@@ -34,6 +34,7 @@ export default function pricing() {
       </article>
     </div>
     <p class="msg" id="pmsg" role="status"></p>
+    <p class="fine legal-links pr-legal">${t('legal.subLine', { pay: `<a href="#/legal/payment">${t('foot.payment')}</a>`, ref: `<a href="#/legal/refunds">${t('foot.refunds')}</a>` })}</p>
     <p class="freelink"><a href="#/">${t('pr.free')}</a></p>
     <section class="faq"><h2>${t('pr.faq')}</h2>${faq}</section>
   </div></main>${footer()}`;

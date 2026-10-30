@@ -8,6 +8,7 @@ import { installSlot } from '../pwa.js';
 import { STORIES, ERAS, eraName } from '../../content/catalog.js';
 import { S } from '../store.js';
 import { freeCount } from '../access.js';
+import { orderCats, isKids } from '../audience.js';
 import { CATEGORIES, DEFAULT_CATEGORY, catName, catDesc, category, accentOf, ornamentSvg, PATTERN } from '../categories.js';
 
 // Arabic search normalisation: drop tashkeel and tatweel, unify alef / ta marbuta / ya forms.
@@ -38,7 +39,7 @@ const metaLine = (s) => (s.ready ? `${t('story.chapters', { n: fnum(s.chapters |
 const book = (s, c, i) => `<li><a class="bk${c && c.kid_friendly ? ' kid' : ''}${s.ready ? '' : ' soon'}" href="#/story/${s.id}">${bookCover(s, c, i)}<b>${esc(s.title)}</b><span class="by">${esc(s.poet || '')}</span><span class="mt">${metaLine(s)}</span></a></li>`;
 
 // Categories that have stories first; empty ones («قريبًا») after them, each group in admin order.
-const byFilled = () => { const n = (c) => STORIES.filter(inCat(c.slug)).length; return [...CATEGORIES.filter((c) => n(c)), ...CATEGORIES.filter((c) => !n(c))]; };
+const byFilled = () => { const n = (c) => STORIES.filter(inCat(c.slug)).length; const cs = orderCats(CATEGORIES); return [...cs.filter((c) => n(c)), ...cs.filter((c) => !n(c))]; };
 
 function catTabs() {
   const tab = (slug, label, n, acc) => {
@@ -74,6 +75,9 @@ function continueCard() {
 
 const searchBox = (ph) => `<label class="search"><span class="sr">${t('home.searchLabel')}</span>${ic('search')}<input id="q" type="search" placeholder="${ph}" value="${esc(f.q)}" autocomplete="off"></label>`;
 
+// Kids home: flat shapes only (sun, clouds, a kite, two birds), no gradients.
+const KIDS_ART = `<svg class="kidsart" viewBox="0 0 320 90" aria-hidden="true"><circle cx="276" cy="34" r="20" fill="var(--k-sun)"/><g fill="var(--k-cloud)"><ellipse cx="60" cy="46" rx="34" ry="14"/><ellipse cx="84" cy="36" rx="20" ry="14"/><ellipse cx="200" cy="22" rx="22" ry="9"/><ellipse cx="214" cy="16" rx="12" ry="9"/></g><path d="M150 18l14 14-14 18-14-18z" fill="var(--acc)"/><path d="M150 50q-4 10 3 16t-1 16" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><g fill="none" stroke="var(--k-teal)" stroke-width="2.5" stroke-linecap="round"><path d="M236 60q6-6 12 0q6-6 12 0"/><path d="M20 20q5-5 10 0q5-5 10 0"/></g></svg>`;
+
 // ------------------------------------------------------------ الكل
 function shelves() {
   const q = !!norm(f.q);
@@ -82,7 +86,9 @@ function shelves() {
 }
 function allView(app) {
   app.innerHTML = `${header('library')}<main id="main">
-    <section class="lhero"><div class="wrap">${ornament}<h1>${t('lib.title')}</h1><p class="lead" style="margin-inline:auto">${t('lib.lead')}</p>${searchBox(t('lib.searchPh'))}${installSlot('lib')}</div></section>
+    ${isKids()
+      ? `<section class="lhero kidshero"><div class="wrap">${KIDS_ART}<h1>${t('kids.title')}</h1><p class="lead" style="margin-inline:auto">${t('kids.lead')}</p>${searchBox(t('kids.searchPh'))}${installSlot('lib')}</div></section>`
+      : `<section class="lhero"><div class="wrap">${ornament}<h1>${t('lib.title')}</h1><p class="lead" style="margin-inline:auto">${t('lib.lead')}</p>${searchBox(t('lib.searchPh'))}${installSlot('lib')}</div></section>`}
     ${catTabs()}${continueCard()}<div class="wrap" id="shelves">${shelves()}</div></main>${footer()}`;
   const q = $('#q');
   q.addEventListener('input', () => { f.q = q.value; $('#shelves').innerHTML = shelves(); });
