@@ -1,6 +1,7 @@
-import { t } from './i18n.js';
+import { t, fdate } from './i18n.js';
 import { ic } from './icons.js';
-import { currentUser, displayName } from './auth.js';
+import { currentUser, displayName, avatarUrl } from './auth.js';
+import { isAdmin } from './cloud.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -15,14 +16,34 @@ export function header(active) {
       <nav class="nav" id="nav" aria-label="${t('nav.menu')}">
         ${link('#/', 'nav.library', 'library')}
         ${link('#/pricing', 'nav.pricing', 'pricing')}
+        ${u ? link('#/account', 'nav.account', 'account') : ''}
+        ${u && isAdmin() ? link('#/admin', 'nav.admin', 'admin') : ''}
       </nav>
       <div class="topact">
-        ${u ? `<span class="me"><bdi>${esc(displayName(u))}</bdi></span><button class="btn ghost sm" data-a="logout">${ic('logout')}<span>${t('nav.logout')}</span></button>`
+        ${u ? `<a class="btn ghost sm me-btn" href="#/account" aria-label="${t('nav.account')}">${ic('user')}<bdi class="me">${esc(displayName(u).split(' ')[0])}</bdi></a>`
             : `<a class="btn ghost sm" href="#/login">${ic('user')}<span>${t('nav.login')}</span></a>`}
         <button class="iconbtn navbtn" data-a="nav" aria-expanded="false" aria-controls="nav" aria-label="${t('nav.menu')}">${ic('menu')}</button>
       </div>
     </div>
   </header>`;
+}
+
+// Square framed avatar plate (spec 3.2): the Google photo over the first letter, which
+// stays visible while the photo loads or when it fails.
+export function avatar(u, cls = 'adm-ava', src) {
+  const url = src !== undefined ? src : avatarUrl(u);
+  const name = typeof u === 'string' ? u : displayName(u);
+  const letter = esc((name || '؟').trim().charAt(0));
+  return `<span class="${cls} avp" aria-hidden="true">${letter}${url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">` : ''}</span>`;
+}
+
+export const fmtDate = (d) => (d ? fdate(d) : '—');
+
+// Theme (day / night) outside the reader: S.prefs.theme, applied on every route.
+export function applyTheme(theme) {
+  if (theme === 'night') document.body.dataset.theme = 'night'; else document.body.removeAttribute('data-theme');
+  const m = document.querySelector('meta[name=theme-color]');
+  if (m) m.content = theme === 'night' ? '#0e1319' : '#f2ebdd';
 }
 
 export function footer() {

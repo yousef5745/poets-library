@@ -71,6 +71,7 @@ function makeReader(meta, mod) {
     top.style.backgroundImage = `url(${img(k)})`; top.style.opacity = 1; bot.style.opacity = 0;
   }
   function placeSpr(id, pos, e) {
+    if (meta.noCharImages) { run.stage[id] = pos; return; }   // category forbids drawing people
     let el = document.getElementById('sp_' + id);
     if (!el) { el = document.createElement('img'); el.id = 'sp_' + id; el.alt = CH[id].name; el.className = 'spr'; $('#sprs').appendChild(el); }
     el.src = img(charImg(id, e));

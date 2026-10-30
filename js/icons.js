@@ -21,6 +21,17 @@ const P = {
   flag: '<path d="M5.5 21V4M5.5 4.5h12l-2.5 4 2.5 4h-12"/>',
   logout: '<path d="M14 4.5H5.5v15H14"/><path d="M10 12h10M17 8.5l3.5 3.5-3.5 3.5"/>',
   play: '<path d="M15 6l-8 6 8 6z"/>',
+  overview: '<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="4"/><rect x="13" y="10" width="7" height="10"/><rect x="4" y="13" width="7" height="7"/>',
+  users: '<circle cx="9" cy="8.5" r="3.5"/><path d="M3 20c1-3.5 3.3-5.5 6-5.5s5 2 6 5.5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.8c1.4.9 2.4 2.6 3 5.2"/>',
+  card: '<rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M6.5 14.5h4"/>',
+  chart: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+  moon: '<path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>',
+  ext: '<path d="M14 4.5h5.5V10M19.5 4.5L11 13"/><path d="M17 14v5.5H4.5V7H10"/>',
+  up: '<path d="M6 14.5l6-6 6 6"/>', down: '<path d="M6 9.5l6 6 6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', minus: '<path d="M5 12h14"/>',
+  robe: '<path d="M9 3.5h6l4.5 3-2 4-1.5-1V20.5H8V9.5l-1.5 1-2-4z"/><path d="M12 3.5v4"/>',
+  home: '<path d="M4 11l8-6.5 8 6.5"/><path d="M6.5 9.5v10h11v-10"/>',
   restart: '<path d="M5 12a7 7 0 1 0 2-5"/><path d="M5 4v4h4"/>',
 };
 export function ic(name, cls = 'ic') {

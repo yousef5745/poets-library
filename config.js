@@ -12,13 +12,13 @@ export const CONFIG = {
     sdkUrl: 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm',
   },
 
-  // Login providers. Only Google is on at launch. The others are coded and stay off
+  // Login providers. Google and email + password are on. Facebook and X are coded and stay off
   // until each provider is set up in Supabase -> Authentication -> Providers.
   auth: {
     google:   { enabled: true },
     facebook: { enabled: false },
     x:        { enabled: false, supabaseProvider: 'x' },   // use 'twitter' if the project still has the legacy provider
-    email:    { enabled: false },                           // magic link
+    email:    { enabled: true, mode: 'password' },            // email + password (sign-up confirms by email); 'magic' = one-time link
   },
 
   lemonSqueezy: {

@@ -1,54 +1,161 @@
+// Login page: Google, then email + password with three modes (دخول / حساب جديد / نسيت كلمة
+// المرور), plus #/reset for the new password after a reset link. Controls follow the
+// figma spec components (.seg, .fld with .emsg, .btn), inside a .dash wrapper.
 import { t } from '../i18n.js';
 import { ic, GOOGLE_G, FB_LOGO, X_LOGO } from '../icons.js';
 import { header, footer, esc, img, $, toast } from '../ui.js';
 import * as auth from '../auth.js';
+import { CONFIG } from '../../config.js';
 
-export default function login() {
+const L = (k, v) => t('login.' + k, v);
+const MIN = 8;   // our rule (Supabase minimum is 6)
+let mode = 'in'; // in | up | forgot
+let lastEmail = '';
+const RET = 'ps_auth_return';
+
+const errMsg = (code) => L('err.' + code) !== 'login.err.' + code ? L('err.' + code) : L('error');
+const field = (id, label, type, ac, extra = '') => `<div class="fld" id="w_${id}"><label for="${id}">${label}</label>
+  <div class="pwrap">${`<input id="${id}" type="${type}" autocomplete="${ac}" ${type === 'email' || type === 'password' ? 'dir="ltr"' : ''} ${type === 'password' ? 'data-pw' : ''} ${extra} aria-describedby="${id}-e">`}${type === 'password' ? `<button type="button" class="pwshow" data-show="${id}" aria-pressed="false" aria-label="${L('show')}">${L('show')}</button>` : ''}</div>
+  <span class="emsg" id="${id}-e" hidden></span></div>`;
+
+function emailForm() {
+  const tabs = `<div class="seg" role="group" aria-label="${L('modeLabel')}"><button type="button" data-mode="in" aria-pressed="${mode === 'in'}">${L('tabIn')}</button><button type="button" data-mode="up" aria-pressed="${mode === 'up'}">${L('tabUp')}</button></div>`;
+  if (mode === 'forgot') {
+    return `<form class="emailf" id="emailf" novalidate><h2 class="eh">${L('forgotTitle')}</h2><p class="fine">${L('forgotLine')}</p>
+      ${field('em', L('emailLabel'), 'email', 'email', `inputmode="email" required value="${esc(lastEmail)}"`)}
+      <button class="btn pri wide" type="submit">${ic('mail')}<span>${L('sendReset')}</span></button>
+      <button type="button" class="link" data-mode="in">${L('backToLogin')}</button></form>`;
+  }
+  const up = mode === 'up';
+  return `${tabs}<form class="emailf" id="emailf" novalidate>
+    ${up ? field('nm', L('nameLabel'), 'text', 'name', 'maxlength="60"') : ''}
+    ${field('em', L('emailLabel'), 'email', 'email', `inputmode="email" required value="${esc(lastEmail)}"`)}
+    ${field('pw', L('pwLabel'), 'password', up ? 'new-password' : 'current-password', `required minlength="${up ? MIN : 1}"`)}
+    ${up ? `<span class="hint fine">${L('pwHint', { n: MIN })}</span>` : `<button type="button" class="link forgot" data-mode="forgot">${L('forgot')}</button>`}
+    <button class="btn pri wide" type="submit">${ic(up ? 'user' : 'lock')}<span>${up ? L('signUp') : L('signIn')}</span></button></form>`;
+}
+
+function resetBox() {
+  const u = auth.currentUser();
+  if (!u) return `<h1>${L('resetTitle')}</h1><div class="state err" role="alert"><b>${L('resetNoSession')}</b><p>${L('resetNoSessionLine')}</p></div>
+    <button type="button" class="btn ghost wide" data-goforgot>${L('sendAgain')}</button>`;
+  return `<h1>${L('resetTitle')}</h1><p class="benefit">${L('resetLine', { e: `<bdi class="ltr">${esc(u.email || '')}</bdi>` })}</p>
+    <form class="emailf" id="resetf" novalidate>${field('pw', L('newPw'), 'password', 'new-password', `required minlength="${MIN}"`)}${field('pw2', L('newPw2'), 'password', 'new-password', 'required')}
+    <span class="hint fine">${L('pwHint', { n: MIN })}</span><button class="btn pri wide" type="submit">${L('savePw')}</button></form>
+    <p class="msg" id="lmsg" role="status" aria-live="polite"></p>`;
+}
+
+function sentBox(email, kind) {
+  return `<div class="sentbox" role="status">${ic('mail', 'ic lg')}<h2>${L(kind === 'reset' ? 'resetSentTitle' : 'confirmTitle')}</h2>
+    <p>${L(kind === 'reset' ? 'resetSentLine' : 'confirmLine', { e: `<bdi class="ltr">${esc(email)}</bdi>` })}</p><p class="fine">${L('checkSpam')}</p>
+    ${kind === 'confirm' ? `<button type="button" class="btn ghost sm" data-resend>${L('resend')}</button>` : ''}
+    <button type="button" class="link" data-mode="in">${L('backToLogin')}</button></div>`;
+}
+
+export default function login(view) {
   const u = auth.currentUser();
   const prov = auth.enabledProviders();
   const others = prov.filter((p) => p === 'facebook' || p === 'x');
   const email = prov.includes('email');
-  const box = u
-    ? `<h1>${t('login.title')}</h1><p class="benefit">${t('login.signedInAs', { name: `<bdi>${esc(auth.displayName(u))}</bdi>` })}</p>
-       <a class="btn pri wide" href="#/">${t('login.guestLink')}</a><button class="btn ghost wide" data-a="logout">${t('nav.logout')}</button>`
-    : `<h1>${t('login.title')}</h1>
-      <p class="benefit">${t('login.benefit')}</p>
+  const magic = CONFIG.auth.email && CONFIG.auth.email.mode === 'magic';
+  let box;
+  if (view === 'reset') box = resetBox();
+  else if (u) box = `<h1>${L('title')}</h1><p class="benefit">${L('signedInAs', { name: `<bdi>${esc(auth.displayName(u))}</bdi>` })}</p>
+       <a class="btn pri wide" href="#/">${L('guestLink')}</a><a class="btn ghost wide" href="#/account">${t('nav.account')}</a>`;
+  else box = `<h1>${L('title')}</h1>
+      <p class="benefit">${L('benefit')}</p>
+      ${auth.lastNotice() === 'link_other_browser' ? `<p class="notice" role="status">${ic('check')}${L('otherBrowser')}</p>` : ''}
       <div class="providers">
-        ${prov.includes('google') ? `<button class="gsi" data-l="google"><span class="gsi-in">${GOOGLE_G}<span class="gsi-t">${t('login.google')}</span></span></button>` : ''}
-        <p class="guest">${t('login.guest')} <a href="#/">${t('login.guestLink')}</a></p>
-        ${others.map((p) => `<button class="sbtn" data-l="${p}">${p === 'facebook' ? FB_LOGO : X_LOGO}<span>${t('login.' + p)}</span></button>`).join('')}
-        ${email ? `${others.length ? '' : ''}<div class="or"><span>${t('login.or')}</span></div>
-          <form class="emailf" id="emailf" novalidate>
-            <label for="em">${t('login.emailLabel')}</label>
-            <input id="em" type="email" inputmode="email" autocomplete="email" dir="ltr" required>
-            <button class="sbtn" type="submit">${ic('mail')}<span>${t('login.emailSend')}</span></button>
-          </form>` : ''}
+        ${prov.includes('google') ? `<button class="gsi" data-l="google"><span class="gsi-in">${GOOGLE_G}<span class="gsi-t">${L('google')}</span></span></button>` : ''}
+        ${others.map((p) => `<button class="sbtn" data-l="${p}">${p === 'facebook' ? FB_LOGO : X_LOGO}<span>${L(p)}</span></button>`).join('')}
+        ${email ? `<div class="or"><span>${L('orEmail')}</span></div><div id="ebox">${magic ? '' : emailForm()}</div>` : ''}
+        <p class="guest">${L('guest')} <a href="#/">${L('guestLink')}</a></p>
       </div>
-      <p class="msg" id="lmsg" role="status"></p>
-      <p class="fine">${t('login.terms')}</p>`;
+      <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
+      <p class="fine">${L('terms')}</p>`;
 
   $('#app').innerHTML = `${header('login')}<main id="main" class="auth">
     <div class="authart" style="background-image:url(${img('tent')})">
       <figure class="aaq"><blockquote><p>هَلَّا سَأَلْتِ الخَيْلَ يَا ابْنَةَ مَالِكٍ</p><p>إِنْ كُنْتِ جَاهِلَةً بِمَا لَمْ تَعْلَمِي</p></blockquote><figcaption>عنترة بن شدّاد</figcaption></figure>
     </div>
-    <section class="authbox"><div class="kicker">${t('site.name')}</div>${box}</section>
+    <section class="authbox dash"><div class="kicker">${t('site.name')}</div>${box}</section>
   </main>${footer()}`;
 
-  const msg = (s) => { const m = $('#lmsg'); if (m) m.textContent = s; };
-  $('#app').querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', async () => {
-    if (!auth.isConfigured()) { msg(t('login.notConfigured')); return; }
+  const root = $('#app');
+  const msg = (s, good) => { const m = $('#lmsg'); if (m) { m.innerHTML = s; m.classList.toggle('ok', !!good); } };
+  const fieldErr = (id, text) => { const w = $('#w_' + id); if (!w) return; w.classList.toggle('err', !!text); const e = $('#' + id + '-e'); e.hidden = !text; e.textContent = text || ''; $('#' + id).setAttribute('aria-invalid', String(!!text)); };
+  const busy = (btn, on) => { if (!btn) return; btn.disabled = on; on ? btn.setAttribute('aria-busy', 'true') : btn.removeAttribute('aria-busy'); };
+  const ebox = () => $('#ebox');
+  const redraw = () => { if (ebox()) { ebox().innerHTML = emailForm(); msg(''); const f = $('#em'); if (f && !f.value) f.focus(); } };
+  const goBack = () => { let r = ''; try { r = sessionStorage.getItem(RET) || ''; sessionStorage.removeItem(RET); } catch (e) {} location.hash = r && !/^#\/(login|reset)/.test(r) ? r : '#/account'; };
+
+  root.querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', async () => {
+    if (!auth.isConfigured()) { msg(L('notConfigured')); return; }
     b.disabled = true;
     const { error } = await auth.signInWith(b.dataset.l);
     b.disabled = false;
-    if (error) msg(t('login.error'));
+    if (error) msg(error === 'provider_disabled' ? L('providerOff') : L('error'));
   }));
-  const f = $('#emailf');
-  if (f) f.addEventListener('submit', async (e) => {
+
+  const onClick = async (e) => {
+    const m = e.target.closest('[data-mode]');
+    if (m) { const em = $('#em'); if (em) lastEmail = em.value.trim(); mode = m.dataset.mode; redraw(); return; }
+    const sh = e.target.closest('[data-show]');
+    if (sh) { const i = $('#' + sh.dataset.show); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; sh.setAttribute('aria-pressed', String(show)); sh.textContent = show ? L('hide') : L('show'); return; }
+    if (e.target.closest('[data-resend]')) {
+      const b = e.target.closest('[data-resend]'); busy(b, true);
+      const { error } = await auth.resendConfirm(lastEmail); busy(b, false);
+      toast(error ? errMsg(error) : L('resent')); return;
+    }
+    if (e.target.closest('[data-goforgot]')) { mode = 'forgot'; location.hash = '#/login'; }
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (!auth.isConfigured()) { msg(t('login.notConfigured')); return; }
-    const v = $('#em').value.trim();
-    if (!/^\S+@\S+\.\S+$/.test(v)) { $('#em').focus(); return; }
-    const { error } = await auth.signInWithEmail(v);
-    msg(error ? t('login.error') : t('login.emailSent'));
-  });
+    const f = e.target;
+    const btn = f.querySelector('[type=submit]');
+    if (f.id === 'resetf') {
+      const a = $('#pw').value, b = $('#pw2').value;
+      fieldErr('pw', a.length < MIN ? L('pwShort', { n: MIN }) : ''); fieldErr('pw2', a !== b ? L('pwMismatch') : '');
+      if (a.length < MIN || a !== b) return;
+      busy(btn, true); const { error } = await auth.setPassword(a); busy(btn, false);
+      if (error) { msg(errMsg(error)); return; }
+      toast(L('pwSaved')); location.hash = '#/account'; return;
+    }
+    if (f.id !== 'emailf') return;
+    if (!auth.isConfigured()) { msg(L('notConfigured')); return; }
+    const em = $('#em').value.trim(); lastEmail = em;
+    const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
+    fieldErr('em', okEmail ? '' : L('emailBad'));
+    if (mode === 'forgot') {
+      if (!okEmail) { $('#em').focus(); return; }
+      busy(btn, true); const { error } = await auth.sendReset(em); busy(btn, false);
+      if (error && error !== 'unknown') { msg(errMsg(error)); return; }
+      ebox().innerHTML = sentBox(em, 'reset'); msg(''); return;   // same answer whether or not the address has an account
+    }
+    const pw = $('#pw').value;
+    const pwBad = mode === 'up' ? (pw.length < MIN ? L('pwShort', { n: MIN }) : '') : (!pw ? L('pwReq') : '');
+    fieldErr('pw', pwBad);
+    if (!okEmail || pwBad) { (okEmail ? $('#pw') : $('#em')).focus(); return; }
+    busy(btn, true); msg('');
+    if (mode === 'up') {
+      const name = ($('#nm') && $('#nm').value.trim()) || '';
+      const r = await auth.signUpEmail(em, pw, name);
+      busy(btn, false);
+      if (r.error === 'exists') { msg(`${L('err.exists')} <button type="button" class="link" data-mode="in">${L('tabIn')}</button> · <button type="button" class="link" data-mode="forgot">${L('forgot')}</button>`); return; }
+      if (r.error) { msg(errMsg(r.error)); return; }
+      if (r.confirm) { ebox().innerHTML = sentBox(em, 'confirm'); return; }
+      toast(L('welcome')); goBack(); return;
+    }
+    const { error } = await auth.signInEmail(em, pw);
+    busy(btn, false);
+    if (error === 'not_confirmed') { msg(`${L('err.not_confirmed')} <button type="button" class="link" data-resend>${L('resend')}</button>`); return; }
+    if (error) { msg(errMsg(error)); return; }
+    toast(L('welcomeBack')); goBack();
+  };
+  const onInput = (e) => { const w = e.target.closest('.fld.err'); if (w) { w.classList.remove('err'); const m = w.querySelector('.emsg'); if (m) m.hidden = true; e.target.removeAttribute('aria-invalid'); } };
+  root.addEventListener('input', onInput);
+  root.addEventListener('click', onClick);
+  root.addEventListener('submit', onSubmit);
+  return () => { root.removeEventListener('input', onInput); root.removeEventListener('click', onClick); root.removeEventListener('submit', onSubmit); };
 }

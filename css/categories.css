@@ -1,0 +1,101 @@
+/* ==========================================================================
+   categories.css: PROPOSED (NEW) per-category accents for the library, all inside v2 «الورّاق».
+   A category only swaps: --cat (accent text/rules), --cat-ink (text on a --cat fill),
+   --cat-tint (quiet panel background), --cat-r (corner radius) and its ornament.
+   Paper, ink, type and button shapes never change.
+   ========================================================================== */
+:root,[data-cat]{--cat:var(--acc);--cat-ink:var(--acc-ink);--cat-tint:var(--paper2);--cat-r:0px}
+[data-cat=poets]   {--cat:#9b2f20;--cat-ink:#fff;--cat-tint:#f8f3e8;--cat-r:0px}   /* = existing --acc */
+[data-cat=kids]    {--cat:#a84a12;--cat-ink:#fff;--cat-tint:#f6e3d3;--cat-r:12px}  /* henna-orange, rounder */
+[data-cat=prophets]{--cat:#2f5d4a;--cat-ink:#fff;--cat-tint:#e4ece4;--cat-r:0px}   /* manuscript green, imagery-free */
+[data-cat=novels]  {--cat:#2e4a6b;--cat-ink:#fff;--cat-tint:#e3e8ef;--cat-r:2px}   /* lapis ink, text-forward */
+body[data-theme=night] [data-cat=poets]   {--cat:#d9a441;--cat-ink:#0e1319;--cat-tint:#151c25}
+body[data-theme=night] [data-cat=kids]    {--cat:#e8915e;--cat-ink:#0e1319;--cat-tint:#2a1d15}
+body[data-theme=night] [data-cat=prophets]{--cat:#7fbf9f;--cat-ink:#0e1319;--cat-tint:#13211b}
+body[data-theme=night] [data-cat=novels]  {--cat:#93b4dc;--cat-ink:#0e1319;--cat-tint:#151d2a}
+
+.sw8{display:inline-block;width:10px;height:10px;background:var(--cat);transform:rotate(45deg);flex:none;margin:0 2px}
+[data-cat=kids] .sw8{border-radius:50%;transform:none;width:11px;height:11px}
+
+/* ---------- library home ---------- */
+.lhero{text-align:center;padding:clamp(22px,4vw,44px) 0 clamp(16px,3vw,26px)}
+.lhero .wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.lhero h1{font-size:clamp(30px,4.6vw,52px)}
+/* category nav: folio tabs >=700, scrolling chips <700 */
+.cattabs{border-bottom:1px solid var(--ink);background:var(--paper);position:sticky;top:64px;z-index:15}
+.cattabs ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+.cattabs ul::-webkit-scrollbar{display:none}
+.cattabs li{flex:none;scroll-snap-align:start}
+.cattabs a{display:flex;align-items:center;gap:8px;min-height:48px;padding:8px 16px;border:1px solid transparent;border-bottom:0;margin-bottom:-1px;font-weight:700;color:var(--mut);text-decoration:none;white-space:nowrap}
+.cattabs a small{font-weight:400;font-size:var(--fs-cap)}
+.cattabs a:hover{color:var(--ink)}
+.cattabs a[aria-current]{border-color:var(--ink);background:var(--paper);color:var(--ink);box-shadow:inset 0 3px 0 var(--cat)}
+.subchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
+@media(max-width:699px){
+  .cattabs{top:58px}
+  .cattabs ul{padding:8px 0;gap:6px}
+  .cattabs ul::before,.cattabs ul::after{content:"";flex:0 0 calc(var(--pad) - 6px)}
+  .cattabs a{min-height:44px;padding:6px 12px;border:1px solid var(--mut);margin:0}
+  .cattabs a[aria-current]{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--cat)}
+  .cattabs{border-bottom:1px solid var(--line)}
+}
+@media(min-width:1024px){.cattabs ul{justify-content:center}}
+
+.shelf{padding-top:var(--s6)}
+.shelfhead{display:grid;grid-template-columns:1fr auto;align-items:end;gap:4px 16px;border-bottom:1px solid var(--cat);padding-bottom:8px;margin-bottom:var(--s4)}
+.shelfhead .orn2{grid-column:1/-1;color:var(--cat);height:14px;width:150px}
+.shelfhead h2{font-size:var(--fs-h3);color:var(--cat)}
+.shelfhead p{grid-column:1;color:var(--mut);font-size:var(--fs-sm)}
+.shelfhead .more{grid-row:2/4;grid-column:2;color:var(--cat);font-weight:700;display:inline-flex;align-items:center;gap:4px;min-height:44px;text-decoration:none;border-bottom:1px solid currentColor}
+.rack{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:46%;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:6px}
+.rack::-webkit-scrollbar{display:none}
+.rack>li{scroll-snap-align:start;min-width:0}
+@media(min-width:700px){.rack{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);overflow:visible}.rack>li:nth-child(n+4){display:none}}
+@media(min-width:1024px){.rack{grid-template-columns:repeat(4,1fr)}.rack>li:nth-child(n+4){display:block}}
+
+.bk{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink)}
+.bk .cv{position:relative;aspect-ratio:3/4;background:var(--paper3) center/cover;outline:1px solid var(--ink);outline-offset:3px;margin:4px;overflow:hidden;border-radius:var(--cat-r)}
+.bk .cv img{position:absolute;bottom:-30%;left:50%;transform:translateX(-50%);height:135%;width:auto;max-width:none}
+.bk b{font-family:var(--f-read);font-size:20px;line-height:1.35;margin-top:6px}
+.bk:hover b{color:var(--cat)}
+.bk .by{color:var(--cat);font-weight:700;font-size:var(--fs-sm)}
+.bk .mt{color:var(--mut);font-size:var(--fs-cap);display:flex;gap:10px;flex-wrap:wrap}
+.bk .badge{position:absolute;inset-block-end:0;inset-inline-end:0;background:var(--paper);color:var(--cat);font-family:var(--f-read);font-weight:700;font-size:15px;padding:0 8px}
+/* poets: existing sepia portrait covers */
+.bk .cv.img{filter:sepia(.18) saturate(.9)}
+/* kids: rounder, thicker frame, a pill badge, no sepia */
+.bk .cv.kid{outline:2px solid var(--cat);outline-offset:4px}
+.bk .cv.kid img{position:static;transform:none;width:100%;height:100%;object-fit:cover}
+.bk .cv.kid .badge{border-radius:999px;inset-block-end:8px;inset-inline-end:8px;border:1.5px solid var(--cat);font-family:var(--f-ui);font-size:13px;padding:0 10px}
+.bk.kid b{font-size:21px}
+/* prophets: imagery-free geometric cover, title in a cartouche */
+.bk .cv.geo{background:var(--cat-tint);display:grid;place-items:center}
+.bk .cv.geo svg.pat{position:absolute;inset:0;width:100%;height:100%;color:var(--cat);opacity:.55}
+.bk .cv.geo .cart{position:relative;background:var(--paper);border:1px solid var(--cat);outline:1px solid var(--cat);outline-offset:3px;padding:10px 8px;width:72%;text-align:center;font-family:var(--f-read);font-weight:700;font-size:19px;color:var(--cat);line-height:1.5}
+/* novels: typographic cover */
+.bk .cv.typo{background:var(--cat-tint);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;padding:16px;text-align:center;border:3px double var(--cat);outline:0;margin:0}
+.bk .cv.typo .t{font-family:var(--f-read);font-weight:700;font-size:24px;line-height:1.4;color:var(--ink)}
+.bk .cv.typo .r{width:40%;border-top:1px solid var(--cat)}
+.bk .cv.typo .a{color:var(--cat);font-size:var(--fs-sm);font-weight:700}
+.shelfnote{display:flex;gap:8px;align-items:flex-start;color:var(--mut);font-size:var(--fs-cap);margin-top:10px;border-inline-start:2px solid var(--cat);padding-inline-start:10px}
+
+/* admin: category manager */
+.catname{display:flex;align-items:center;gap:10px}
+.catname b{font-family:var(--f-read);font-size:19px;color:var(--cat)}
+.catname small{display:block;color:var(--mut);font-size:13px;direction:ltr;text-align:end}
+.flags{display:flex;gap:6px;flex-wrap:wrap}
+.flags .tag{border-color:var(--cat);color:var(--cat)}
+.catedit{border:1px solid var(--ink);background:var(--paper2);padding:16px;margin-top:var(--s4);display:grid;grid-template-columns:1fr;gap:14px}
+.catedit h3{font-size:var(--fs-h4);color:var(--cat);display:flex;align-items:center;gap:8px}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.swatches label{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 12px 4px 10px;border:1px solid var(--mut);cursor:pointer;font-weight:700;font-size:var(--fs-sm)}
+.swatches label i{width:20px;height:20px;background:var(--c);flex:none;outline:1px solid var(--ink);outline-offset:2px}
+.swatches label.on{border:2px solid var(--ink);padding:3px 11px 3px 9px}
+.flagrow{display:flex;flex-direction:column;gap:2px;border-top:1px dotted var(--mut);padding-top:8px}
+.flagrow .hint{color:var(--mut);font-size:var(--fs-cap)}
+.catedit .acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.catedit .acts .fine{margin-inline-start:auto}
+@media(min-width:700px){.catedit{grid-template-columns:1fr 1fr}.catedit .full{grid-column:1/-1}}
+.swatches input.sr{width:1px;min-height:0;padding:0;border:0}
+.bk .cv.typo .orn2{width:70%;height:12px;color:var(--cat)}
+@media(max-width:699px){.rack{grid-auto-columns:42%}}

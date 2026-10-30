@@ -18,6 +18,11 @@ const blank = () => ({
 });
 
 export const S = blank();
+export const fresh = blank;
+
+// Called after every write to localStorage; js/cloud.js hooks in here to sync to Supabase.
+export const hooks = { afterSave: null };
+const after = () => { if (hooks.afterSave) { try { hooks.afterSave(); } catch (e) {} } };
 
 export function load() {
   let raw = null;
@@ -45,9 +50,9 @@ function importOld() {
 let tmr = null;
 export function save() {
   clearTimeout(tmr);
-  tmr = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }, 50);
+  tmr = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} after(); }, 50);
 }
-export function saveNow() { clearTimeout(tmr); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+export function saveNow() { clearTimeout(tmr); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} after(); }
 
 export const done = (sid) => (S.chDone[sid] ||= {});
 export const endings = (sid) => (S.endings[sid] ||= {});
