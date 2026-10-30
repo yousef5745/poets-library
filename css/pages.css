@@ -202,3 +202,11 @@ details p{color:var(--mut);padding-bottom:12px}
 .atabs button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--acc)}
 .atabs button:hover{color:var(--ink)}
 .authbox .providers .guest{margin:-2px 0 2px;font-size:15px;color:var(--mut)}
+
+/* under-review stories: quiet outlined badge + note */
+.revtag{display:inline-block;border:1px solid var(--mut);color:var(--mut);padding:0 7px;font-size:13px;font-weight:700;line-height:1.7;font-family:var(--f-ui);white-space:nowrap}
+.bk .mt .revtag{font-size:12px;padding:0 6px}
+.revnote{border-inline-start:3px solid var(--mut);background:var(--paper2);padding:10px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:start;margin:4px 0}
+.revnote p{font-size:15px;color:var(--ink);line-height:1.8;margin:0}
+.sheet-box .revnote{width:100%}
+.sheet-box .revnote p{font-size:14px}

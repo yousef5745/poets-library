@@ -31,7 +31,8 @@ function bookCover(s, c, i) {
   if (s.cover) return `<span class="cv img" style="background-image:url(${img(s.cover)})">${s.ready && s.portrait ? `<img src="${img(s.portrait)}" alt="" loading="lazy">` : ''}<span class="badge tnum">${String(i + 1).padStart(2, '0')}</span></span>`;
   return `<span class="cv typo">${ornamentSvg({ ornament: 'rule' })}<span class="t">${esc(s.title)}</span><span class="r"></span><span class="a">${esc(s.poet || '')}</span></span>`;
 }
-const metaLine = (s) => (s.ready ? `${t('story.chapters', { n: fnum(s.chapters || 5) })} · ${t('story.minutes', { n: fnum(s.minutes) })}` : t('story.soon'));
+const revTag = (s) => (s.underReview ? `<span class="revtag">${t('rev.badge')}</span>` : '');
+const metaLine = (s) => (s.ready ? `${t('story.chapters', { n: fnum(s.chapters || 5) })} · ${t('story.minutes', { n: fnum(s.minutes) })}${revTag(s)}` : t('story.soon'));
 const book = (s, c, i) => `<li><a class="bk${c && c.kid_friendly ? ' kid' : ''}${s.ready ? '' : ' soon'}" href="#/story/${s.id}">${bookCover(s, c, i)}<b>${esc(s.title)}</b><span class="by">${esc(s.poet || '')}</span><span class="mt">${metaLine(s)}</span></a></li>`;
 
 // Categories that have stories first; empty ones («قريبًا») after them, each group in admin order.
@@ -95,7 +96,7 @@ function cover(s, i) {
 }
 function card(s, i) {
   const meta = s.ready
-    ? `<span>${ic('book')}${t('story.chapters', { n: fnum(s.chapters || 5) })}</span><span>${ic('clock')}${t('story.minutes', { n: fnum(s.minutes) })}</span><span class="fr">${freeText(freeCount(s), s.chapters)}</span>`
+    ? `<span>${ic('book')}${t('story.chapters', { n: fnum(s.chapters || 5) })}</span><span>${ic('clock')}${t('story.minutes', { n: fnum(s.minutes) })}</span><span class="fr">${freeText(freeCount(s), s.chapters)}</span>${revTag(s)}`
     : `<span class="soonlbl">${t('story.soon')}</span>`;
   return `<li><a class="card${s.ready ? '' : ' soon'}" href="#/story/${s.id}">${cover(s, i)}<div class="cbody">
       <div class="kicker">${eraName(s.era)}${s.trio ? ` · ${t('trio.' + s.trio)}` : ''}${s.kid && s.minAge ? ` · ${t('lib.age', { n: fnum(s.minAge) })}` : ''}</div>

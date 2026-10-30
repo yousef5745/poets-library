@@ -71,6 +71,7 @@ function draw(m, story, notes) {
         <h1>${esc(m.title)}</h1>
         <div class="poet">${esc(m.poet)} · ${esc(m.sub)}</div>
         <p class="syn">${esc(m.synopsis)}</p>
+        ${m.underReview ? `<div class="revnote" role="note"><span class="revtag">${t('rev.badge')}</span><p>${t('rev.note')}</p></div>` : ''}
         <dl class="stats">
           <div><dt>${t('sp.stChapters')}</dt><dd>${chapters.length}</dd></div>
           <div><dt>${t('sp.stMinutes')}</dt><dd>${m.minutes}</dd></div>

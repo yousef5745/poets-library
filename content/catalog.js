@@ -62,11 +62,10 @@ export const STORIES = [
     verse: ['وَإِنَّ صَخراً لَتَأتَمُّ الهُداةُ بِهِ', 'كَأَنَّهُ عَلَمٌ في رَأسِهِ نارُ'],
     load: () => import('./khansa.js'),
   },
-  // DRAFT (prophets pilot, chapter 1 only): hidden from the library until an admin publishes it
-  // (stories_admin.published = true) and a scholar has reviewed the text. Dev preview on
-  // localhost only: localStorage.ps_dev_drafts = '1'.
+  // Prophets pilot, published by the owner before scholar review: `underReview` shows the
+  // «قيد المراجعة» badge on cards, the full note on the story page and once before chapter 1.
   {
-    id: 'nuh', ready: true, draft: true, category: 'prophets', noCharImages: true, kid: true, minAge: 6,
+    id: 'nuh', ready: true, underReview: true, category: 'prophets', noCharImages: true, kid: true, minAge: 6,
     title: 'سَلْمى والسَّفينة', poet: 'نوحٌ عليه السلام', sub: 'قصّة نوحٍ عليه السلام للأطفال',
     era: 'prophets', cover: 'nuh_village', portrait: null, chapters: 6, endings: 3, verses: 36, minutes: 50, freeChapters: 2,
     synopsis: 'سَلْمى بنتٌ صغيرة من قريةٍ بعيدة، تُعيد عصفورًا إلى عشّه، وتجلس مع راعٍ فقير، وتعدّ النجوم مع جدّتها، ومن حولها يدعو نوحٌ عليه السلام قومه ليلًا ونهارًا. ثمّ ترى السفينة تعلو بين التلال، وتركبها مع المؤمنين والحيوانات زوجين زوجين، وتصبر على الموج حتى تستوي السفينة على الجوديّ، وتزرع نبتتها في الأرض الجديدة. وفي آخر الرحلة تتعلّم درسًا: الرحمة أو الصبر أو الإصغاء.',

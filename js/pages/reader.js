@@ -198,8 +198,12 @@ function makeReader(meta, mod) {
     setBg(story.nodes[run.node].bg, true);
     headerInfo(); mode('intro'); $('#ui').innerHTML = '';
     const [num, name] = splitTitle(chap(cid).title);
+    // Stories flagged underReview show the review note once, on the first chapter's intro.
+    const REV_KEY = 'ps_rev_seen_' + sid;
+    let rev = '';
+    try { if (meta.underReview && i === 0 && !localStorage.getItem(REV_KEY)) { rev = `<div class="revnote" role="note"><span class="revtag">${t('rev.badge')}</span><p>${t('rev.note')}</p></div>`; localStorage.setItem(REV_KEY, '1'); } } catch (e) {}
     sheet(`<div class="kicker">${esc(story.title)}</div><h2>${esc(num)}</h2><p class="chname">${esc(name)}</p>
-      <div class="chcover" style="background-image:url(${img(chap(cid).cover)})"></div>
+      <div class="chcover" style="background-image:url(${img(chap(cid).cover)})"></div>${rev}
       <button class="btn pri wide" data-r="play">${t('sp.start')}</button>`, { cls: 'intro', closable: false });
   }
   function play() { closeSheet(true); render(); }
