@@ -35,6 +35,7 @@ p{margin:0}
 .topin{display:flex;align-items:center;gap:20px;height:64px}
 .logo{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-read);font-weight:700;font-size:23px;text-decoration:none;white-space:nowrap}
 .logo .lg{color:var(--acc);width:24px;height:24px}
+.logo .lgm{display:block;height:38px;width:auto;aspect-ratio:225/100}
 .nav{display:flex;gap:22px}
 .nav a{text-decoration:none;color:var(--mut);font-weight:700;padding:6px 0;border-bottom:2px solid transparent}
 .nav a.on,.nav a:hover{color:var(--acc);border-color:var(--acc)}
@@ -44,6 +45,7 @@ p{margin:0}
 @media(max-width:699px){
   .topin{gap:10px;height:58px}
   .logo{font-size:21px}
+  .logo .lgm{height:32px}
   .navbtn{display:inline-grid;width:44px;height:44px}
   .topact .btn span{display:none}.topact .btn{min-width:44px;padding:6px 10px;min-height:44px}
   .me{display:none}

@@ -3,7 +3,7 @@
 // Only role=admin sees it; RLS and the is_admin() check in every RPC enforce the same rule.
 import { t, fnum, fsigned, fday, fshort, fago, ftime, fdate } from '../i18n.js';
 import { ic } from '../icons.js';
-import { $, esc, toast, sheet, closeSheet, avatar, footer } from '../ui.js';
+import { $, esc, toast, sheet, closeSheet, avatar, footer, brand } from '../ui.js';
 import * as auth from '../auth.js';
 import { S } from '../store.js';
 import { cloud, isAdmin, onCloud, ALL_STORIES, applySettings, applyStoryFlags, applyCategories, subActive } from '../cloud.js';
@@ -29,7 +29,7 @@ function adminHeader() {
   const u = auth.currentUser();
   const night = S.prefs.theme === 'night';
   return `<header class="top"><div class="wrap topin adm-topin">
-    <a class="logo" href="#/">${ic('quill', 'ic lg')}<span>${t('site.name')}</span></a><span class="adm-badge">${T('badge')}</span>
+    ${brand()}<span class="adm-badge">${T('badge')}</span>
     <div class="topact">
       <button class="iconbtn" data-a="theme" aria-pressed="${night}" aria-label="${T('night')}">${ic('moon')}</button>
       <span class="me"><bdi>${esc(((cloud.profile && cloud.profile.display_name) || auth.displayName(u)).split(' ')[0])} (${T('roleAdmin')})</bdi></span>

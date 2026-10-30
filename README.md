@@ -1,4 +1,4 @@
-# قصص الشعراء: site (Phase 1)
+# حكايا: site (Phase 1)
 
 Static site with no build step. It runs on GitHub Pages as is, using hash routing (`#/story/antara`), so it needs no SPA fallback.
 It is Arabic and right-to-left, and ready for more languages: UI strings live in `i18n/ar.js` and story text lives in `content/`.

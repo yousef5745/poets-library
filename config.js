@@ -2,7 +2,7 @@
 // Only public values belong here (this file ships to the browser). Never put the Supabase
 // service_role key, the Lemon Squeezy API key or the webhook signing secret in this file.
 export const CONFIG = {
-  siteName: 'قصص الشعراء',
+  siteName: 'حكايا',
   defaultLocale: 'ar',
   locales: ['ar'],               // add 'en' later: create i18n/en.js and list it here
 

@@ -2,7 +2,7 @@
 // To add a language: copy this file to i18n/<code>.js, translate the values, add the code to CONFIG.locales.
 export default {
   dir: 'rtl',
-  'site.name': 'قصص الشعراء',
+  'site.name': 'حكايا',
   'site.tagline': 'حكايات تفاعلية من سِيَر شعراء العرب',
   'nav.library': 'المكتبة',
   'nav.poets': 'الشعراء',

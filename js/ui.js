@@ -7,12 +7,16 @@ export const $ = (s, r = document) => r.querySelector(s);
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export const img = (k) => `assets/img/${k}.webp`;
 
+// Brand lockup «حكايا» (seal + wordmark). The SVG symbols live once in index.html and
+// paint with --ink / --acc / --paper, so the night theme gets the gold seal on its own.
+export const brand = () => `<a class="logo" href="#/" aria-label="${t('site.name')}"><svg class="lgm" viewBox="0 0 225 100" aria-hidden="true" focusable="false"><use href="#hk-logo"/></svg></a>`;
+
 export function header(active) {
   const u = currentUser();
   const link = (href, key, id) => `<a href="${href}" class="${active === id ? 'on' : ''}"${active === id ? ' aria-current="page"' : ''}>${t(key)}</a>`;
   return `<header class="top">
     <div class="wrap topin">
-      <a class="logo" href="#/">${ic('quill', 'ic lg')}<span>${t('site.name')}</span></a>
+      ${brand()}
       <nav class="nav" id="nav" aria-label="${t('nav.menu')}">
         ${link('#/', 'nav.library', 'library')}
         ${link('#/pricing', 'nav.pricing', 'pricing')}
@@ -48,7 +52,7 @@ export function applyTheme(theme) {
 
 export function footer() {
   return `<footer class="foot"><div class="wrap footin">
-    <div><a class="logo" href="#/">${ic('quill', 'ic lg')}<span>${t('site.name')}</span></a><p>${t('foot.about')}</p></div>
+    <div>${brand()}<p>${t('foot.about')}</p></div>
     <nav class="flinks"><a href="#/legal/terms">${t('foot.terms')}</a><a href="#/legal/privacy">${t('foot.privacy')}</a><a href="#/legal/refunds">${t('foot.refunds')}</a></nav>
   </div></footer>`;
 }
