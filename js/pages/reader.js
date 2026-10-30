@@ -39,7 +39,7 @@ function makeReader(meta, mod) {
   let curBg = null;
   const chIdx = (cid) => chapters.findIndex((c) => c.id === cid);
   const chap = (cid) => chapters[chIdx(cid)];
-  const heroImg = () => CH.hero.looks[S.look] || 'antara1';
+  const heroImg = () => (run && CH.hero.chap && CH.hero.chap[run.chap]) || CH.hero.looks[S.look] || 'antara1';
   const charImg = (id, e) => (id === 'hero' ? heroImg() : (CH[id].img[e] || CH[id].img.n));
 
   function layout() {

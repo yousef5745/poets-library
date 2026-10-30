@@ -28,6 +28,7 @@ export default {
   'home.status': 'الحالة',
   'era.all': 'كل العصور',
   'trio.naqaid': 'ثلاثية النقائض',
+  'trio.shaairat': 'شاعرات العرب',
   'access.all': 'الكل',
   'access.free': 'فيها فصول مجانية',
   'status.all': 'الكل',
