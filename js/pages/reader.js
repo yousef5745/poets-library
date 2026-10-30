@@ -3,7 +3,7 @@ import { ic, ornament } from '../icons.js';
 import { $, esc, img, sheet, closeSheet, sheetOpen, toast, applyReadSize, sizeControl, applyReadFont, fontControl } from '../ui.js';
 import { CONFIG } from '../../config.js';
 import { storyMeta } from '../../content/catalog.js';
-import { S, save, saveNow, done, endings, chk } from '../store.js';
+import { S, save, saveNow, done, endings, chk, setPref } from '../store.js';
 import { canRead } from '../access.js';
 import { freshRun, clone, cond, applyFx, unmet, resolveRoute } from '../engine.js';
 import { splitTitle } from './story.js';
@@ -422,10 +422,10 @@ function makeReader(meta, mod) {
       case 'nextch': closeSheet(true); enterChapter(v); break;
       case 'menu': case 'map': case 'settings': menu(); break;
       case 'pearls': sheet(`<h2>${t('r.pearls')}: ${S.pearls}</h2><p>${t('pr.a1')}</p><button class="btn pri wide" data-a="sheet-close">${t('r.ok')}</button>`); break;
-      case 'size': S.prefs.size = v; saveNow(); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
-      case 'font': S.prefs.font = v; saveNow(); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
-      case 'theme': S.prefs.theme = v; saveNow(); applyPrefs(); menu(); break;
-      case 'sound': S.prefs.sound = v === 'on'; saveNow(); audio.setOn(S.prefs.sound); menu(); break;
+      case 'size': setPref('size', v); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
+      case 'font': setPref('font', v); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
+      case 'theme': setPref('theme', v); applyPrefs(); menu(); break;
+      case 'sound': setPref('sound', v === 'on'); audio.setOn(S.prefs.sound); menu(); break;
     }
   }
   function onKey(ev) {

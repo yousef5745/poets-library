@@ -5,6 +5,7 @@ import { header, footer, esc, img, $ } from '../ui.js';
 import { storyMeta, eraName } from '../../content/catalog.js';
 import { S, done, endings, chk, saveNow } from '../store.js';
 import { canRead, isFreeChapter, freeCount } from '../access.js';
+import { currentUser, isConfigured } from '../auth.js';
 
 export const splitTitle = (title) => { const i = title.indexOf(':'); return i < 0 ? ['', title] : [title.slice(0, i).trim(), title.slice(i + 1).trim()]; };
 
@@ -79,6 +80,7 @@ function draw(m, story, notes) {
           <div><dt>${m.versesLabel || t('sp.stVerses')}</dt><dd>${m.verses}</dd></div>
         </dl>
         <div class="actions">${primary}${run ? `<button class="btn ghost" data-a="restart">${ic('restart')}${t('sp.restart')}</button>` : ''}</div>
+        ${isConfigured() && !currentUser() ? `<p class="fine loginnote">${ic('lock')}<span>${t('sp.loginNote')}</span> <a href="#/read/${m.id}">${t('nav.login')}</a></p>` : ''}
         <p class="fine">${ic('book')}${freeText(freeCount(m), chapters.length, 'note')}</p>
       </div>
     </section>

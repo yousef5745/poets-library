@@ -15,6 +15,7 @@ const blank = () => ({
   chDone: {},    // storyId -> { chapterId: 1 }
   endings: {},   // storyId -> { endingId: 1 }
   prefs: { size: 'm', font: 'amiri', theme: 'day', sound: false },
+  prefsAt: 0,    // when the reader last changed a pref on this device (cloud merge: newest wins)
 });
 
 export const S = blank();
@@ -53,6 +54,10 @@ export function save() {
   tmr = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} after(); }, 50);
 }
 export function saveNow() { clearTimeout(tmr); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} after(); }
+
+// Every reading preference change goes through here: stored at once with its time, so a later
+// cloud merge never replaces it with an older copy from the profile.
+export function setPref(k, v) { S.prefs[k] = v; S.prefsAt = Date.now(); saveNow(); }
 
 export const done = (sid) => (S.chDone[sid] ||= {});
 export const endings = (sid) => (S.endings[sid] ||= {});

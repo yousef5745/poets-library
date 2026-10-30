@@ -87,7 +87,7 @@ const rowOf = (sid) => ({
   state: { run: S.runs[sid] || null, chk: (S.chk || {})[sid] || {}, chDone: (S.chDone || {})[sid] || {} },
   endings: Object.keys((S.endings || {})[sid] || {}),
 });
-const walletOf = () => ({ look: S.look, owned: S.owned, prefs: S.prefs, synced: true });
+const walletOf = () => ({ look: S.look, owned: S.owned, prefs: S.prefs, prefsAt: S.prefsAt || 0, synced: true });
 
 let snap = {};           // last state seen per story (for diffs and events)
 let snapWallet = '';
@@ -110,8 +110,10 @@ function afterSave() {
     snap[sid] = js; dirty.add(sid);
   }
   const w = JSON.stringify([S.pearls, walletOf()]);
-  if (w !== snapWallet) { snapWallet = w; dirtyWallet = true; }
-  if (auth.currentUser() && (dirty.size || dirtyWallet)) { clearTimeout(pushT); pushT = setTimeout(push, 1500); }
+  let prefsOnly = false;
+  if (w !== snapWallet) { prefsOnly = !dirty.size && JSON.parse(snapWallet || '[]')[0] === S.pearls; snapWallet = w; dirtyWallet = true; }
+  // a settings change goes up almost at once (people change it and reload or leave right away)
+  if (auth.currentUser() && (dirty.size || dirtyWallet)) { clearTimeout(pushT); pushT = setTimeout(push, prefsOnly ? 250 : 1500); }
 }
 
 async function push() {
@@ -140,7 +142,10 @@ function merge(profile, rows) {
     S.pearls = profile.pearls;
     if (w.look) S.look = w.look;
     if (Array.isArray(w.owned)) S.owned = [...new Set([...(S.owned || []), ...w.owned])];
-    if (w.prefs) S.prefs = Object.assign(S.prefs || {}, w.prefs);
+    // Reading prefs: last write wins. The profile copy is used only when it is newer than this
+    // device's own change (or this device never changed one), so a slow or missed push can no
+    // longer bring back an old size or font after a reload or a new sign-in.
+    if (w.prefs && (!S.prefsAt || (w.prefsAt || 0) > S.prefsAt)) { S.prefs = Object.assign(S.prefs || {}, w.prefs); S.prefsAt = w.prefsAt || 0; }
   } else {
     S.pearls = Math.max(S.pearls, profile.pearls);
   }

@@ -5,7 +5,7 @@ import { ic } from '../icons.js';
 import { header, footer, esc, $, avatar, img, toast, applyTheme, applyReadSize, sizeControl, applyReadFont, fontControl } from '../ui.js';
 import * as auth from '../auth.js';
 import { cloud, currentSub, subActive, refreshAccount, onCloud, ALL_STORIES } from '../cloud.js';
-import { S, saveNow } from '../store.js';
+import { S, saveNow, setPref } from '../store.js';
 import { CONFIG } from '../../config.js';
 import { sw, flip, tag, confirm, empty } from '../dash-ui.js';
 
@@ -169,17 +169,17 @@ function bind() {
   const app = $('#app');
   const onClick = async (e) => {
     const th = e.target.closest('[data-acc=theme]');
-    if (th) { S.prefs.theme = S.prefs.theme === 'night' ? 'day' : 'night'; saveNow(); applyTheme(S.prefs.theme); flip(th, S.prefs.theme === 'night'); return; }
+    if (th) { setPref('theme', S.prefs.theme === 'night' ? 'day' : 'night'); applyTheme(S.prefs.theme); flip(th, S.prefs.theme === 'night'); return; }
     const ff = e.target.closest('[data-fs=font]');
     if (ff) {
-      S.prefs.font = applyReadFont(ff.dataset.v); saveNow();
+      setPref('font', applyReadFont(ff.dataset.v));
       const box = ff.closest('.acc-read'); if (box) box.outerHTML = readPanel();
       const nb = document.querySelector(`.acc-read [data-fs=font][data-v="${S.prefs.font}"]`); if (nb) nb.focus();
       return;
     }
     const fs = e.target.closest('[data-fs=size]');
     if (fs) {
-      S.prefs.size = applyReadSize(fs.dataset.v); saveNow();
+      setPref('size', applyReadSize(fs.dataset.v));
       const box = fs.closest('.acc-read'); if (box) box.outerHTML = readPanel();
       const nb = document.querySelector(`.acc-read [data-fs][data-v="${S.prefs.size}"]:not(.fsstep)`); if (nb) nb.focus();
       return;

@@ -11,7 +11,7 @@ const L = (k, v) => t('login.' + k, v);
 const MIN = 8;   // our rule (Supabase minimum is 6)
 let mode = 'in'; // in | up | forgot
 let lastEmail = '';
-const RET = 'ps_auth_return';
+let gate = null;  // { meta, idx, free, ret } when login() is the reader's sign-in gate
 
 const errMsg = (code) => L('err.' + code) !== 'login.err.' + code ? L('err.' + code) : L('error');
 const field = (id, label, type, ac, extra = '') => `<div class="fld" id="w_${id}"><label for="${id}">${label}</label>
@@ -52,7 +52,10 @@ function sentBox(email, kind) {
     <button type="button" class="link" data-mode="in">${L('backToLogin')}</button></div>`;
 }
 
-export default function login(view) {
+// gateFor: { meta, chapIdx, free } from the reader route when a signed-out visitor opens a chapter.
+// The URL keeps the reader hash, so after any sign-in the router opens that same chapter.
+export default function login(view, gateFor) {
+  gate = view === 'gate' ? { ...gateFor, ret: location.hash } : null;
   const u = auth.currentUser();
   const prov = auth.enabledProviders();
   const others = prov.filter((p) => p === 'facebook' || p === 'x');
@@ -62,21 +65,28 @@ export default function login(view) {
   if (view === 'reset') box = resetBox();
   else if (u) box = `<h1>${L('title')}</h1><p class="benefit">${L('signedInAs', { name: `<bdi>${esc(auth.displayName(u))}</bdi>` })}</p>
        <a class="btn pri wide" href="#/">${L('guestLink')}</a><a class="btn ghost wide" href="#/account">${t('nav.account')}</a>`;
-  else box = `<h1>${L('title')}</h1>
-      <p class="benefit">${L('benefit')}</p>
+  else box = `${gate ? `<p class="kicker gatek">${esc(gate.meta.title)}</p><h1>${L('gateTitle')}</h1>
+      <p class="benefit">${L(gate.free ? 'gateFree' : 'gatePaid')}</p>` : `<h1>${L('title')}</h1>
+      <p class="benefit">${L('benefit')}</p>`}
       ${auth.lastNotice() === 'link_other_browser' ? `<p class="notice" role="status">${ic('check')}${L('otherBrowser')}</p>` : ''}
       <div class="providers">
         ${prov.includes('google') ? `<button class="gsi" data-l="google"><span class="gsi-in">${GOOGLE_G}<span class="gsi-t">${L('google')}</span></span></button>` : ''}
-        <p class="guest">${L('guest')} <a href="#/">${L('guestLink')}</a></p>
+        ${gate ? '' : `<p class="guest">${L('guest')} <a href="#/">${L('guestLink')}</a></p>`}
         ${others.map((p) => `<button class="sbtn" data-l="${p}">${p === 'facebook' ? FB_LOGO : X_LOGO}<span>${L(p)}</span></button>`).join('')}
         ${email ? `<div class="or"><span>${L('orEmail')}</span></div><div id="ebox">${magic ? '' : emailForm()}</div>` : ''}
       </div>
       <p class="msg" id="lmsg" role="status" aria-live="polite"></p>
-      <p class="fine">${L('terms')}</p>`;
+      <p class="fine">${L('terms')}</p>
+      ${gate ? `<a class="link gateback" href="#/story/${gate.meta.id}">${ic('back')}${L('gateBack')}</a>` : ''}`;
 
-  $('#app').innerHTML = `${header('login')}<main id="main" class="auth">
-    <div class="authart" style="background-image:url(${img('tent')})">
-      <figure class="aaq"><blockquote><p>هَلَّا سَأَلْتِ الخَيْلَ يَا ابْنَةَ مَالِكٍ</p><p>إِنْ كُنْتِ جَاهِلَةً بِمَا لَمْ تَعْلَمِي</p></blockquote><figcaption>عنترة بن شدّاد</figcaption></figure>
+  const gm = gate && gate.meta;
+  const quote = gm && gm.verse && gm.verse.length === 2
+    ? `<figure class="aaq"><blockquote><p>${esc(gm.verse[0])}</p><p>${esc(gm.verse[1])}</p></blockquote><figcaption>${esc(gm.poet || gm.title)}</figcaption></figure>`
+    : gm ? `<figure class="aaq"><blockquote><p>${esc(gm.title)}</p></blockquote>${gm.poet ? `<figcaption>${esc(gm.poet)}</figcaption>` : ''}</figure>`
+    : `<figure class="aaq"><blockquote><p>هَلَّا سَأَلْتِ الخَيْلَ يَا ابْنَةَ مَالِكٍ</p><p>إِنْ كُنْتِ جَاهِلَةً بِمَا لَمْ تَعْلَمِي</p></blockquote><figcaption>عنترة بن شدّاد</figcaption></figure>`;
+  $('#app').innerHTML = `${header('login')}<main id="main" class="auth${gate ? ' gate' : ''}" ${gate ? 'data-gate="1"' : ''}>
+    <div class="authart" style="background-image:url(${img((gm && gm.cover) || 'tent')})">
+      ${quote}
     </div>
     <section class="authbox dash">${box}</section>
   </main>${footer()}`;
@@ -87,7 +97,9 @@ export default function login(view) {
   const busy = (btn, on) => { if (!btn) return; btn.disabled = on; on ? btn.setAttribute('aria-busy', 'true') : btn.removeAttribute('aria-busy'); };
   const ebox = () => $('#ebox');
   const redraw = () => { if (ebox()) { ebox().innerHTML = emailForm(); msg(''); const f = $('#em'); if (f && !f.value) f.focus(); } };
-  const goBack = () => { let r = ''; try { r = sessionStorage.getItem(RET) || ''; sessionStorage.removeItem(RET); } catch (e) {} location.hash = r && !/^#\/(login|reset)/.test(r) ? r : '#/account'; };
+  // In the gate the hash is already the reader chapter: the auth listener re-renders it, so stay put.
+  const G = gate;
+  const goBack = () => { const r = auth.takeReturn(); if (G) { if (location.hash !== G.ret) location.hash = G.ret; return; } location.hash = r && !/^#\/(login|reset)/.test(r) ? r : '#/account'; };
 
   root.querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', async () => {
     if (!auth.isConfigured()) { msg(L('notConfigured')); return; }
@@ -104,7 +116,7 @@ export default function login(view) {
     if (sh) { const i = $('#' + sh.dataset.show); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; sh.setAttribute('aria-pressed', String(show)); sh.textContent = show ? L('hide') : L('show'); return; }
     if (e.target.closest('[data-resend]')) {
       const b = e.target.closest('[data-resend]'); busy(b, true);
-      const { error } = await auth.resendConfirm(lastEmail); busy(b, false);
+      const { error } = await auth.resendConfirm(lastEmail, gate && gate.ret); busy(b, false);
       toast(error ? errMsg(error) : L('resent')); return;
     }
     if (e.target.closest('[data-goforgot]')) { mode = 'forgot'; location.hash = '#/login'; }
@@ -140,7 +152,7 @@ export default function login(view) {
     busy(btn, true); msg('');
     if (mode === 'up') {
       const name = ($('#nm') && $('#nm').value.trim()) || '';
-      const r = await auth.signUpEmail(em, pw, name);
+      const r = await auth.signUpEmail(em, pw, name, gate && gate.ret);
       busy(btn, false);
       if (r.error === 'exists') { msg(`${L('err.exists')} <button type="button" class="link" data-mode="in">${L('tabIn')}</button> · <button type="button" class="link" data-mode="forgot">${L('forgot')}</button>`); return; }
       if (r.error) { msg(errMsg(r.error)); return; }

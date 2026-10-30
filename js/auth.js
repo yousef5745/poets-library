@@ -41,12 +41,44 @@ async function makeClient() {
   });
   const { data } = await client.auth.getSession();
   user = data.session ? data.session.user : null;
+  readyDone = true;
   emit();
   return client;
 }
 
 const RET = 'ps_auth_return';
+const RET_L = 'ps_auth_return_l';   // localStorage copy: an email confirmation link opens in a new tab
 let authError = '';
+// Where to go after signing in (e.g. the reader chapter the login gate interrupted).
+export function setReturn(h) {
+  try { sessionStorage.setItem(RET, h); localStorage.setItem(RET_L, JSON.stringify({ h, at: Date.now() })); } catch (e) {}
+}
+export function takeReturn() {
+  let r = '';
+  try {
+    r = sessionStorage.getItem(RET) || '';
+    if (!r) { const l = JSON.parse(localStorage.getItem(RET_L) || 'null'); if (l && Date.now() - l.at < 864e5) r = l.h || ''; }
+    sessionStorage.removeItem(RET); localStorage.removeItem(RET_L);
+  } catch (e) {}
+  return /access_token=|error_description=/.test(r) ? '' : r;
+}
+// Resolves once the stored session (if any) is known, so routes can decide without a flash.
+let readyDone = !isConfigured();
+let clientFailed = false;
+// Offline (PWA) or the auth library could not load: a reader who has a stored Supabase session on
+// this device keeps reading; the server is never asked, nothing new is unlocked.
+export function knownUserOffline() {
+  if (navigator.onLine !== false && !clientFailed) return false;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (/^sb-.+-auth-token$/.test(k)) { const v = JSON.parse(localStorage.getItem(k) || 'null'); if (v && (v.user || (v.currentSession && v.currentSession.user))) return true; }
+    }
+  } catch (e) {}
+  return false;
+}
+export const isReady = () => readyDone;
+export const ready = () => (isConfigured() ? getClient().then(() => user, () => { readyDone = true; clientFailed = true; return null; }) : Promise.resolve(null));
 let recovery = false;
 export const lastAuthError = () => authError;
 export const inRecovery = () => recovery;
@@ -64,9 +96,7 @@ export async function init() {
   // starts; Supabase has still confirmed the address. Tell the reader to log in with the password.
   if (qs.has('code') && !user && !authError) notice = 'link_other_browser';
   if (back) {
-    let ret = '';
-    try { ret = sessionStorage.getItem(RET) || ''; sessionStorage.removeItem(RET); } catch (e) {}
-    if (/access_token=|error_description=/.test(ret)) ret = '';
+    const ret = takeReturn();
     const hash = (/^#\//.test(location.hash) ? location.hash : '') || ret || '#/';
     history.replaceState(null, '', location.pathname + (hash === '#/login' && user ? '#/account' : hash));
     window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -76,7 +106,7 @@ export async function init() {
 function redirectTo(ret) {
   // Supabase redirects to this exact URL (no hash: the code comes back as ?code=).
   // The hash route is kept in sessionStorage and restored by init().
-  try { sessionStorage.setItem(RET, ret || location.hash || '#/'); } catch (e) {}
+  setReturn(ret || location.hash || '#/');
   return location.origin + location.pathname;
 }
 
@@ -112,10 +142,11 @@ function emailErr(error) {
   if (/same.?password|different from the old/.test(m)) return 'same_password';
   return 'unknown';
 }
-export async function signUpEmail(email, password, name) {
+// ret: hash to open after the confirmation link (the gated reader chapter, else the account page).
+export async function signUpEmail(email, password, name, ret) {
   const c = await getClient();
   if (!c) return { error: 'not_configured' };
-  const { data, error } = await c.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo('#/account'), data: name ? { full_name: name } : {} } });
+  const { data, error } = await c.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo(ret || '#/account'), data: name ? { full_name: name } : {} } });
   if (error) return { error: emailErr(error) };
   // An address that already has an account comes back with no identities (Supabase hides it).
   if (data && data.user && Array.isArray(data.user.identities) && !data.user.identities.length) return { error: 'exists' };
@@ -127,10 +158,10 @@ export async function signInEmail(email, password) {
   const { error } = await c.auth.signInWithPassword({ email, password });
   return { error: emailErr(error) };
 }
-export async function resendConfirm(email) {
+export async function resendConfirm(email, ret) {
   const c = await getClient();
   if (!c) return { error: 'not_configured' };
-  const { error } = await c.auth.resend({ type: 'signup', email, options: { emailRedirectTo: redirectTo('#/account') } });
+  const { error } = await c.auth.resend({ type: 'signup', email, options: { emailRedirectTo: redirectTo(ret || '#/account') } });
   return { error: emailErr(error) };
 }
 export async function sendReset(email) {

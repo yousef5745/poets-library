@@ -210,3 +210,10 @@ details p{color:var(--mut);padding-bottom:12px}
 .revnote p{font-size:15px;color:var(--ink);line-height:1.8;margin:0}
 .sheet-box .revnote{width:100%}
 .sheet-box .revnote p{font-size:14px}
+/* Sign-in gate before reading (login page in gate mode) + note on the story page */
+.auth.gate .gatek{margin:0;color:var(--acc);font-weight:700;font-size:15px;letter-spacing:0}
+.auth.gate .gateback{display:inline-flex;align-items:center;gap:6px;align-self:center;font-size:15px;color:var(--mut)}
+.auth.gate .gateback .ic{width:16px;height:16px}
+.loginnote{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;color:var(--mut)}
+.loginnote .ic{width:16px;height:16px;flex:none}
+.loginnote a{color:var(--acc);font-weight:700}

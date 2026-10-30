@@ -10,7 +10,10 @@ It is Arabic and right-to-left, and ready for more languages: UI strings live in
 ## Tests
 - `node tests/validate.mjs`: graph check. Every node is reachable, there are no dead ends, and every ending is used.
 - `python3 tests/play.py`: plays Antara end to end in the real reader with three choice strategies.
-- `python3 tests/guest.py`: as a guest, chapters 1 and 2 play and then the subscribe prompt appears.
+- `python3 tests/guest.py`: signed in without a subscription, chapters 1 and 2 play and then the subscribe prompt appears.
+- `python3 tests/gate.py`: reading needs an account. Home, category and story pages stay public; a signed-out visitor on any `#/read/...` hash gets the sign-in gate (no story text), and after email login, the Google redirect or a confirmation link the same chapter opens. This is a UI gate only: chapter files are still public JS until chapters move behind Supabase RLS.
+- `python3 tests/prefs_persist.py`: reading font and size survive a reload, another story and sign out / in (last write wins between this device and the profile, by `prefsAt`).
+- Reader tests sign in with the mock Supabase (`fixtures.signed_in()`).
 - `python3 tests/shots.py`: takes screenshots at 390, 768 and 1280 into `shots/`.
 
 To test premium chapters on localhost only, run `localStorage.ps_dev_premium = '1'`. The site ignores this anywhere else.

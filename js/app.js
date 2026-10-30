@@ -12,6 +12,8 @@ import account from './pages/account.js';
 import admin from './pages/admin.js';
 import * as cloud from './cloud.js';
 import { initPWA } from './pwa.js';
+import { storyMeta } from '../content/catalog.js';
+import { isFreeChapter } from './access.js';
 
 setLocale('ar');
 store.load();
@@ -21,7 +23,7 @@ const routes = [
   [/^\/?$/, () => library()],
   [/^\/c\/([\w-]+)$/, (m) => library(m[1])],
   [/^\/story\/([\w-]+)$/, (m) => storyPage(m[1])],
-  [/^\/read\/([\w-]+)(?:\/([\w-]+))?$/, (m) => reader(m[1], m[2])],
+  [/^\/read\/([\w-]+)(?:\/([\w-]+))?$/, (m) => readGate(m[1], m[2])],
   [/^\/login$/, () => login()],
   [/^\/reset$/, () => login('reset')],
   [/^\/pricing$/, () => pricing()],
@@ -29,6 +31,26 @@ const routes = [
   [/^\/account$/, () => account()],
   [/^\/admin(?:\/(\w+))?$/, (m) => admin(m[1])],
 ];
+
+// Reading needs an account (free chapters included). Home, category and story pages stay public.
+// Signed out -> the sign-in gate on the same #/read/... hash; once signed in (Google redirect,
+// email login or a confirmation link) the router renders this route again and opens that chapter.
+// This is a UI gate only: chapter files are still public JS until chapters move behind Supabase RLS.
+function readGate(sid, chapId) {
+  const meta = storyMeta(sid);
+  if (!meta || !meta.ready) { location.hash = '#/'; return null; }
+  if (!auth.isConfigured() || auth.currentUser()) return reader(sid, chapId);
+  const hash = location.hash;
+  let alive = true;
+  if (!auth.isReady()) {
+    $('#app').innerHTML = `<main id="main" class="auth"><p class="loading">…</p></main>`;
+    auth.ready().then(() => { if (alive && location.hash === hash) render(); });
+    return () => { alive = false; };
+  }
+  if (auth.knownUserOffline()) return reader(sid, chapId);
+  const n = /^c(\d+)$/.exec(chapId || (store.S.runs[sid] && store.S.runs[sid].chap) || '');
+  return login('gate', { meta, free: isFreeChapter(meta, n ? +n[1] - 1 : 0) });
+}
 
 let cleanup = null, lastHash = location.hash;
 export function render(ev) {
@@ -66,7 +88,7 @@ document.addEventListener('click', async (ev) => {
     el.setAttribute('aria-expanded', String(open));
   } else if (a === 'logout') { await auth.signOut(); toast(t('acc.signedOut')); if (/^#\/(account|admin)/.test(location.hash)) location.hash = '#/'; else render(); }
   else if (a === 'theme') {
-    store.S.prefs.theme = store.S.prefs.theme === 'night' ? 'day' : 'night'; store.saveNow();
+    store.setPref('theme', store.S.prefs.theme === 'night' ? 'day' : 'night');
     applyTheme(store.S.prefs.theme);
     document.querySelectorAll('[data-a=theme]').forEach((b) => b.setAttribute('aria-pressed', String(store.S.prefs.theme === 'night')));
   }
@@ -76,6 +98,7 @@ document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeShe
 // Re-render when login state, admin role or premium access changes (not on every sync).
 let cloudKey = '';
 cloud.onCloud(() => {
+  applyReadSize(store.S.prefs.size); applyReadFont(store.S.prefs.font);
   const k = `${!!cloud.cloud.profile}:${cloud.isAdmin()}:${cloud.premium()}`;
   if (k === cloudKey) return;
   cloudKey = k;
