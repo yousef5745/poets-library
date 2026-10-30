@@ -76,7 +76,7 @@ function draw(m, story, notes) {
           <div><dt>${t('sp.stChapters')}</dt><dd>${chapters.length}</dd></div>
           <div><dt>${t('sp.stMinutes')}</dt><dd>${m.minutes}</dd></div>
           <div><dt>${t('sp.stEndings')}</dt><dd>${gotEnds}/${Object.keys(story.endings).length}</dd></div>
-          <div><dt>${t('sp.stVerses')}</dt><dd>${m.verses}</dd></div>
+          <div><dt>${m.versesLabel || t('sp.stVerses')}</dt><dd>${m.verses}</dd></div>
         </dl>
         <div class="actions">${primary}${run ? `<button class="btn ghost" data-a="restart">${ic('restart')}${t('sp.restart')}</button>` : ''}</div>
         <p class="fine">${ic('book')}${freeText(freeCount(m), chapters.length, 'note')}</p>
@@ -85,7 +85,7 @@ function draw(m, story, notes) {
     <div class="sbody">
       <section class="chapters"><h2>${t('sp.chapters')}</h2><ol class="chlist">${rows}</ol></section>
       <aside class="sside">
-        <div class="panel verse"><div class="kicker">${t('sp.verseHead')}</div>${ornament}<p class="bayt">${esc(m.verse[0])}</p><p class="bayt">${esc(m.verse[1])}</p><small>${esc(m.poet)}</small></div>
+        <div class="panel verse"><div class="kicker">${m.verseHead || t('sp.verseHead')}</div>${ornament}<p class="bayt">${esc(m.verse[0])}</p><p class="bayt">${esc(m.verse[1])}</p><small>${esc(m.poet)}</small></div>
         <div class="panel"><h3>${t('sp.endings')} <small>${gotEnds}/${Object.keys(story.endings).length}</small></h3><ul class="ends">${ends}</ul></div>
         <div class="panel"><h3>${t((m.category || DEFAULT_CATEGORY) === 'poets' ? 'sp.aboutPoet' : 'sp.aboutStory')}</h3><p>${esc(m.poetBio)}</p><p class="src"><b>${t('sp.sources')}:</b> ${esc(m.sources)}</p></div>
         ${notes && notes.length ? `<div class="panel notes"><h3>${t('sp.history')}</h3><ul>${notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}

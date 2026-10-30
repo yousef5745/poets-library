@@ -9,10 +9,12 @@
 [data-cat=kids]    {--cat:#a84a12;--cat-ink:#fff;--cat-tint:#f6e3d3;--cat-r:12px}  /* henna-orange, rounder */
 [data-cat=prophets]{--cat:#2f5d4a;--cat-ink:#fff;--cat-tint:#e4ece4;--cat-r:0px}   /* manuscript green, imagery-free */
 [data-cat=novels]  {--cat:#2e4a6b;--cat-ink:#fff;--cat-tint:#e3e8ef;--cat-r:2px}   /* lapis ink, text-forward */
+[data-cat=plays]   {--cat:#6b2a4a;--cat-ink:#fff;--cat-tint:#f1e4ea;--cat-r:0px}   /* theatre plum, stage-curtain covers */
 body[data-theme=night] [data-cat=poets]   {--cat:#d9a441;--cat-ink:#0e1319;--cat-tint:#151c25}
 body[data-theme=night] [data-cat=kids]    {--cat:#e8915e;--cat-ink:#0e1319;--cat-tint:#2a1d15}
 body[data-theme=night] [data-cat=prophets]{--cat:#7fbf9f;--cat-ink:#0e1319;--cat-tint:#13211b}
 body[data-theme=night] [data-cat=novels]  {--cat:#93b4dc;--cat-ink:#0e1319;--cat-tint:#151d2a}
+body[data-theme=night] [data-cat=plays]   {--cat:#dca3c0;--cat-ink:#0e1319;--cat-tint:#22161d}
 
 .sw8{display:inline-block;width:10px;height:10px;background:var(--cat);transform:rotate(45deg);flex:none;margin:0 2px}
 [data-cat=kids] .sw8{border-radius:50%;transform:none;width:11px;height:11px}
@@ -106,3 +108,13 @@ body[data-theme=night] .cattabs a[aria-current] .sw8{background:var(--acc)}
 .swatches input.sr{width:1px;min-height:0;padding:0;border:0}
 .bk .cv.typo .orn2{width:70%;height:12px;color:var(--cat)}
 @media(max-width:699px){.rack{grid-auto-columns:42%}}
+
+/* plays: the cover image framed by a drawn stage curtain (two velvet swags and a pelmet) */
+.bk .cv.stage{filter:none}
+.bk .cv.stage::before,.bk .cv.stage::after{content:"";position:absolute;top:0;bottom:0;width:24%;z-index:1;
+  background:linear-gradient(90deg,rgba(0,0,0,.25),transparent 30%,rgba(0,0,0,.2) 55%,transparent 80%),var(--cat)}
+.bk .cv.stage::before{inset-inline-start:0;border-end-end-radius:60% 30%}
+.bk .cv.stage::after{inset-inline-end:0;border-end-start-radius:60% 30%}
+.bk .cv.stage .pelmet{position:absolute;top:0;left:0;right:0;height:11%;z-index:2;background:var(--cat);
+  -webkit-mask:radial-gradient(circle at 50% 0,#000 70%,transparent 71%) 0 0/20% 100% repeat-x;mask:radial-gradient(circle at 50% 0,#000 70%,transparent 71%) 0 0/20% 100% repeat-x}
+.bk .cv.stage .badge{z-index:3}

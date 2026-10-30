@@ -2,6 +2,16 @@
 @font-face{font-family:Amiri;src:url(../assets/fonts/amiri.woff2) format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:Amiri;src:url(../assets/fonts/amirib.woff2) format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Noto Naskh Arabic';src:url(../assets/fonts/naskh.woff2) format('woff2');font-weight:400 700;font-display:swap}
+/* reading-font choices (S.prefs.font). Kept out of the precache (assets/fonts/extra/): the browser fetches a
+   face only when text uses it (the picker or the chosen story font), then the service worker keeps it cache-first. */
+@font-face{font-family:'Markazi Text';src:url(../assets/fonts/extra/markazi-text-arabic-400.woff2) format('woff2');font-weight:400;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'Markazi Text';src:url(../assets/fonts/extra/markazi-text-arabic-700.woff2) format('woff2');font-weight:700;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'Markazi Text';src:url(../assets/fonts/extra/markazi-text-latin-400.woff2) format('woff2');font-weight:400;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:'Markazi Text';src:url(../assets/fonts/extra/markazi-text-latin-700.woff2) format('woff2');font-weight:700;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:Cairo;src:url(../assets/fonts/extra/cairo-arabic-400.woff2) format('woff2');font-weight:400;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Cairo;src:url(../assets/fonts/extra/cairo-arabic-700.woff2) format('woff2');font-weight:700;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Cairo;src:url(../assets/fonts/extra/cairo-latin-400.woff2) format('woff2');font-weight:400;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:Cairo;src:url(../assets/fonts/extra/cairo-latin-700.woff2) format('woff2');font-weight:700;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
 @font-face{font-family:'Reem Kufi';src:url(../assets/fonts/reem.woff2) format('woff2');font-weight:400;font-display:swap}
 :root{
   --paper:#f2ebdd; --paper2:#f8f3e8; --paper3:#e9dfcb;
@@ -11,6 +21,7 @@
   --f-ui:'Noto Naskh Arabic',Amiri,serif;
   --f-kicker:'Noto Naskh Arabic',Amiri,serif;   /* Reem Kufi dropped: it broke joins (ه drawn as م) and spacing */
   --f-sans:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Arabic',sans-serif; /* admin + Google button */
+  --f-story:var(--f-read);   /* dialogue, narration, choices, glosses: S.prefs.font (ui.js READ_FONTS) */
   --read-size:22px; --read-lh:1.9;
   --wrap:1200px; --pad:clamp(16px,4vw,32px);
   --tap:48px; --choice-h:56px;

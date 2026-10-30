@@ -28,6 +28,8 @@ function bookCover(s, c, i) {
   const age = s.minAge || (c && c.min_age);
   if (s.noCharImages || (c && c.no_character_images)) return `<span class="cv geo">${PATTERN()}<span class="cart">${esc(s.title)}</span></span>`;
   if (kid && s.cover) return `<span class="cv kid"><img src="${img(s.cover)}" alt="" loading="lazy">${age ? `<span class="badge">${t('lib.age', { n: fnum(age) })}</span>` : ''}</span>`;
+  // plays: the scene behind a drawn stage curtain (css .cv.stage)
+  if (s.cover && c && accentOf(c) === 'plays') return `<span class="cv img stage" style="background-image:url(${img(s.cover)})"><span class="pelmet"></span>${s.ready && s.portrait ? `<img src="${img(s.portrait)}" alt="" loading="lazy">` : ''}<span class="badge tnum">${String(i + 1).padStart(2, '0')}</span></span>`;
   if (s.cover) return `<span class="cv img" style="background-image:url(${img(s.cover)})">${s.ready && s.portrait ? `<img src="${img(s.portrait)}" alt="" loading="lazy">` : ''}<span class="badge tnum">${String(i + 1).padStart(2, '0')}</span></span>`;
   return `<span class="cv typo">${ornamentSvg({ ornament: 'rule' })}<span class="t">${esc(s.title)}</span><span class="r"></span><span class="a">${esc(s.poet || '')}</span></span>`;
 }

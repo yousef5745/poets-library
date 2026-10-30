@@ -2,7 +2,7 @@
 // progress per story, endings found (titles only once reached, never spoilers), wardrobe.
 import { t, fnum, fsigned, fdate, fmonthYear } from '../i18n.js';
 import { ic } from '../icons.js';
-import { header, footer, esc, $, avatar, img, toast, applyTheme } from '../ui.js';
+import { header, footer, esc, $, avatar, img, toast, applyTheme, applyReadSize, sizeControl, applyReadFont, fontControl } from '../ui.js';
 import * as auth from '../auth.js';
 import { cloud, currentSub, subActive, refreshAccount, onCloud, ALL_STORIES } from '../cloud.js';
 import { S, saveNow } from '../store.js';
@@ -66,6 +66,11 @@ function pearlsPanel() {
   return `<section class="panel" aria-labelledby="h-pe"><h3 id="h-pe">${A('pearls')}</h3><div class="acc-big"><b class="tnum">${fnum(S.pearls)}</b><span>${A('pearlWord')}</span></div>
     <p class="fine">${on ? A('pearlsMonthly', { n: fnum(CONFIG.plans.monthlyPearls) }) + ' ' + next : A('pearlsFree')}</p>
     ${rows ? `<ul class="acc-ledger" aria-label="${A('ledger')}">${rows}</ul>` : ''}</section>`;
+}
+
+// Reading settings: the same font + text-size controls as the reader's ⋯ menu (saved with the wallet prefs).
+function readPanel() {
+  return `<section class="panel acc-read" aria-labelledby="h-rd"><h3 id="h-rd">${t('r.settings')}</h3><p class="fine">${t('r.fontFamily')}</p>${fontControl(S.prefs.font, 'data-fs')}<p class="fine">${t('r.textSize')}</p>${sizeControl(S.prefs.size, 'data-fs')}</section>`;
 }
 
 // ------------------------------------------------------------ main column
@@ -153,7 +158,7 @@ function draw() {
         <p class="fine">${A('via.' + prov) !== 'acc2.via.' + prov ? A('via.' + prov) : A('via.google')} · ${A('since', { d: fmonthYear(since) })}</p></div>
       <div class="hact">${sw(night, `${A('night')}: ${A('swOn')}`, `${A('night')}: ${A('swOff')}`, 'data-acc="theme"')}<button type="button" class="btn ghost sm" data-a="logout">${ic('logout')}<span>${A('logout')}</span></button></div></section>
     ${cc ? cc.html : ''}
-    <div class="acc-grid"><aside class="acc-side" aria-label="${A('sideLabel')}">${subPanel()}${pearlsPanel()}</aside>
+    <div class="acc-grid"><aside class="acc-side" aria-label="${A('sideLabel')}">${subPanel()}${pearlsPanel()}${readPanel()}</aside>
       <div class="acc-main">${progressRows()}${endingsCards()}${wardrobe()}</div></div>
     <p class="fine" style="margin-top:24px">${ic(p ? 'check' : 'lock')}${p ? t('acc.sync') : t('acc.noSync')}</p>
     <div class="acc-signout" style="margin-top:24px"><button type="button" class="btn ghost" data-a="logout">${ic('logout')}${A('logout')}</button></div>
@@ -165,6 +170,20 @@ function bind() {
   const onClick = async (e) => {
     const th = e.target.closest('[data-acc=theme]');
     if (th) { S.prefs.theme = S.prefs.theme === 'night' ? 'day' : 'night'; saveNow(); applyTheme(S.prefs.theme); flip(th, S.prefs.theme === 'night'); return; }
+    const ff = e.target.closest('[data-fs=font]');
+    if (ff) {
+      S.prefs.font = applyReadFont(ff.dataset.v); saveNow();
+      const box = ff.closest('.acc-read'); if (box) box.outerHTML = readPanel();
+      const nb = document.querySelector(`.acc-read [data-fs=font][data-v="${S.prefs.font}"]`); if (nb) nb.focus();
+      return;
+    }
+    const fs = e.target.closest('[data-fs=size]');
+    if (fs) {
+      S.prefs.size = applyReadSize(fs.dataset.v); saveNow();
+      const box = fs.closest('.acc-read'); if (box) box.outerHTML = readPanel();
+      const nb = document.querySelector(`.acc-read [data-fs][data-v="${S.prefs.size}"]:not(.fsstep)`); if (nb) nb.focus();
+      return;
+    }
     const w = e.target.closest('[data-wear]');
     if (w) { S.look = w.dataset.wear; saveNow(); toast(A('worn')); draw(); return; }
     const b = e.target.closest('[data-buy]');

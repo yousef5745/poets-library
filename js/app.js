@@ -1,7 +1,7 @@
 import { setLocale, t } from './i18n.js';
 import * as store from './store.js';
 import * as auth from './auth.js';
-import { $, closeSheet, toast, applyTheme } from './ui.js';
+import { $, closeSheet, toast, applyTheme, applyReadSize, applyReadFont } from './ui.js';
 import library from './pages/library.js';
 import storyPage from './pages/story.js';
 import reader from './pages/reader.js';
@@ -43,6 +43,8 @@ export function render(ev) {
   document.body.removeAttribute('data-theme');
   document.body.className = '';
   applyTheme(store.S.prefs.theme);   // night mode follows the reader's saved choice on every page
+  applyReadSize(store.S.prefs.size); // reading text size too (account page sample, reader)
+  applyReadFont(store.S.prefs.font); // and the reading font
   for (const [re, fn] of routes) {
     const m = path.match(re);
     if (m) { cleanup = fn(m) || null; window.scrollTo(0, 0); return; }

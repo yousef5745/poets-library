@@ -44,6 +44,47 @@ export function avatar(u, cls = 'adm-ava', src) {
 
 export const fmtDate = (d) => (d ? fdate(d) : '—');
 
+// Reading text size (S.prefs.size): four steps, applied as --read-size on <html> on every route,
+// and html[data-rsize] lets the reader panel grow at the larger steps. Synced with the wallet prefs.
+export const READ_SIZES = { s: 19, m: 22, l: 25, xl: 29 };
+export const READ_STEPS = ['s', 'm', 'l', 'xl'];
+export function applyReadSize(size) {
+  const k = READ_SIZES[size] ? size : 'm';
+  document.documentElement.style.setProperty('--read-size', READ_SIZES[k] + 'px');
+  document.documentElement.dataset.rsize = k;
+  return k;
+}
+// Segmented control «صغير / عادي / كبير / كبير جدًا» with A− / A+ at the ends and a live sample line.
+// attr names the click data attribute (data-r in the reader, data-fs on the account page).
+export function sizeControl(cur, attr) {
+  const i = Math.max(0, READ_STEPS.indexOf(cur));
+  const step = (d, lab, dis) => `<button type="button" class="fsstep" ${attr}="size" data-v="${READ_STEPS[Math.min(READ_STEPS.length - 1, Math.max(0, i + d))]}" aria-label="${t(d < 0 ? 'fs.smaller' : 'fs.bigger')}"${dis ? ' disabled' : ''}><bdi dir="ltr">${lab}</bdi></button>`;
+  return `<div class="fsctl"><div class="fsrow">${step(-1, 'A−', i === 0)}<div class="seg fsseg" role="group" aria-label="${t('r.textSize')}">${READ_STEPS.map((k) => `<button type="button" ${attr}="size" data-v="${k}" class="${READ_STEPS[i] === k ? 'on' : ''}" aria-pressed="${READ_STEPS[i] === k}">${t('fs.' + k)}</button>`).join('')}</div>${step(1, 'A+', i === READ_STEPS.length - 1)}</div>
+    <p class="preview fsprev" aria-live="polite">${t('fs.sample')}</p></div>`;
+}
+
+// Reading font (S.prefs.font): applied as --f-story on <html> (dialogue, narration, choices, glosses).
+// Amiri and Noto Naskh are already loaded; Markazi Text and Cairo are self-hosted in assets/fonts/extra and
+// fetched only when the picker or the chosen font draws text. Ayah cards keep Amiri (css/reader.css).
+export const READ_FONTS = {
+  amiri: "Amiri,'Noto Naskh Arabic',serif",
+  naskh: "'Noto Naskh Arabic',Amiri,serif",
+  markazi: "'Markazi Text',Amiri,serif",
+  cairo: "Cairo,'Noto Naskh Arabic',sans-serif",
+};
+export const FONT_KEYS = Object.keys(READ_FONTS);
+export function applyReadFont(font) {
+  const k = READ_FONTS[font] ? font : 'amiri';
+  document.documentElement.style.setProperty('--f-story', READ_FONTS[k]);
+  document.documentElement.dataset.rfont = k;
+  return k;
+}
+// «نوع الخط»: four buttons, each written in its own face (name + a one-word descriptor).
+export function fontControl(cur, attr) {
+  const c = READ_FONTS[cur] ? cur : 'amiri';
+  return `<div class="ffseg" role="group" aria-label="${t('r.fontFamily')}">${FONT_KEYS.map((k) => `<button type="button" ${attr}="font" data-v="${k}" class="${c === k ? 'on' : ''}" aria-pressed="${c === k}" style="font-family:${READ_FONTS[k].replace(/"/g, '&quot;')}">${t('ff.' + k)}<small>${t('ff.' + k + 'D')}</small></button>`).join('')}</div>`;
+}
+
 // Theme (day / night) outside the reader: S.prefs.theme, applied on every route.
 export function applyTheme(theme) {
   if (theme === 'night') document.body.dataset.theme = 'night'; else document.body.removeAttribute('data-theme');

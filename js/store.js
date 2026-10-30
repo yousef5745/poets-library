@@ -14,7 +14,7 @@ const blank = () => ({
   chk: {},       // storyId -> { chapterId: run snapshot at chapter start }
   chDone: {},    // storyId -> { chapterId: 1 }
   endings: {},   // storyId -> { endingId: 1 }
-  prefs: { size: 'm', theme: 'day', sound: false },
+  prefs: { size: 'm', font: 'amiri', theme: 'day', sound: false },
 });
 
 export const S = blank();

@@ -1,6 +1,6 @@
 import { t, pearlsWord } from '../i18n.js';
 import { ic, ornament } from '../icons.js';
-import { $, esc, img, sheet, closeSheet, sheetOpen, toast } from '../ui.js';
+import { $, esc, img, sheet, closeSheet, sheetOpen, toast, applyReadSize, sizeControl, applyReadFont, fontControl } from '../ui.js';
 import { CONFIG } from '../../config.js';
 import { storyMeta } from '../../content/catalog.js';
 import { S, save, saveNow, done, endings, chk } from '../store.js';
@@ -9,7 +9,6 @@ import { freshRun, clone, cond, applyFx, unmet, resolveRoute } from '../engine.j
 import { splitTitle } from './story.js';
 import * as audio from '../audio.js';
 
-const SIZES = { s: 20, m: 22, l: 25 };
 const HINT_KEY = 'ps_hint_n', HINT_MAX = 4;   // the big «المس للمتابعة» shows on the first few screens only
 const MS_PER_CHAR = 30, REVEAL_CAP = 2400;     // line reveal speed; a tap shows the whole line at once
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -34,7 +33,8 @@ export default function reader(sid, chapId) {
 
 export function applyPrefs() {
   document.body.dataset.theme = S.prefs.theme === 'night' ? 'night' : 'day';
-  document.documentElement.style.setProperty('--read-size', SIZES[S.prefs.size] + 'px');
+  S.prefs.size = applyReadSize(S.prefs.size);
+  S.prefs.font = applyReadFont(S.prefs.font);
 }
 
 function makeReader(meta, mod) {
@@ -235,8 +235,11 @@ function makeReader(meta, mod) {
       if (st.v) {
         focus(null); mode('verse'); audio.sfx('verse');
         // Ayah cards (prophets): one block, own kicker, never added to the recent-verses list.
-        if (!st.ayah && !run.verses.some((x) => x[0] === st.v[0])) run.verses.push(st.v);
-        ui.innerHTML = `<div class="dlg verse${st.ayah ? ' ayah' : ''} fade" data-r="adv"><div class="kicker">${t(st.ayah ? 'r.ayah' : 'r.verse')}</div>${ornament}<p class="h">${esc(st.v[0])}</p>${st.v[1] ? `<p class="h">${esc(st.v[1])}</p>` : ''}<small class="by">${esc(st.by || '')}</small>${st.ex ? `<p class="gloss">${esc(st.ex)}</p>` : ''}${goHint()}</div>`;
+        // Quote cards (novels, plays, fables): a famous line of the original work in our translation,
+        // the original-language line under it; also kept out of the recent-verses list.
+        if (!st.ayah && !st.quote && !run.verses.some((x) => x[0] === st.v[0])) run.verses.push(st.v);
+        const kick = st.quote ? (st.k || t('r.quote')) : t(st.ayah ? 'r.ayah' : 'r.verse');
+        ui.innerHTML = `<div class="dlg verse${st.ayah ? ' ayah' : ''}${st.quote ? ' quote' : ''} fade" data-r="adv"><div class="kicker">${esc(kick)}</div>${ornament}<p class="h">${esc(st.v[0])}</p>${st.v[1] ? `<p class="h">${esc(st.v[1])}</p>` : ''}${st.orig ? `<p class="orig" dir="ltr" lang="${/[àâçéèêëîïôûùüÿœ]/i.test(st.orig) ? 'fr' : 'en'}">${esc(st.orig)}</p>` : ''}<small class="by">${esc(st.by || '')}</small>${st.ex ? `<p class="gloss">${esc(st.ex)}</p>` : ''}${goHint()}</div>`;
         revealUntil = 0; return;
       }
       if (st.n) { focus(null); mode('nar'); ui.innerHTML = `<div class="dlg nar" data-r="adv"><p class="rv">${words(st.n)}</p>${goHint()}</div>`; startReveal(st.n); return; }
@@ -393,7 +396,8 @@ function makeReader(meta, mod) {
     const seg = (r, cur, opts) => `<div class="seg" role="group">${opts.map(([v, l]) => `<button data-r="${r}" data-v="${v}" class="${cur === v ? 'on' : ''}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>`;
     const box = document.querySelector('#sheet .sheet-box.menu'), y = box ? box.scrollTop : 0;
     sheet(`<h2>${t('r.settings')}</h2>
-      <div class="setrow"><span>${t('r.textSize')}</span>${seg('size', S.prefs.size, [['s', '<span style="font-size:16px">أ</span>'], ['m', '<span style="font-size:20px">أ</span>'], ['l', '<span style="font-size:25px">أ</span>']])}</div>
+      <div class="setrow fsrowset ffrowset"><span>${t('r.fontFamily')}</span>${fontControl(S.prefs.font, 'data-r')}</div>
+      <div class="setrow fsrowset"><span>${t('r.textSize')}</span>${sizeControl(S.prefs.size, 'data-r')}</div>
       <div class="setrow"><span>${t('r.theme')}</span>${seg('theme', S.prefs.theme, [['day', t('r.themeDay')], ['night', t('r.themeNight')]])}</div>
       <div class="setrow"><span>${t('r.sound')}</span>${seg('sound', S.prefs.sound ? 'on' : 'off', [['on', t('r.on')], ['off', t('r.off')]])}</div>
       ${mapHTML()}${statsHTML()}${versesHTML()}<p class="keys">${t('r.keys')}</p>`, { cls: 'menu' });
@@ -418,7 +422,8 @@ function makeReader(meta, mod) {
       case 'nextch': closeSheet(true); enterChapter(v); break;
       case 'menu': case 'map': case 'settings': menu(); break;
       case 'pearls': sheet(`<h2>${t('r.pearls')}: ${S.pearls}</h2><p>${t('pr.a1')}</p><button class="btn pri wide" data-a="sheet-close">${t('r.ok')}</button>`); break;
-      case 'size': S.prefs.size = v; saveNow(); applyPrefs(); menu(); break;
+      case 'size': S.prefs.size = v; saveNow(); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
+      case 'font': S.prefs.font = v; saveNow(); applyPrefs(); menu(); requestAnimationFrame(placePop); break;
       case 'theme': S.prefs.theme = v; saveNow(); applyPrefs(); menu(); break;
       case 'sound': S.prefs.sound = v === 'on'; saveNow(); audio.setOn(S.prefs.sound); menu(); break;
     }

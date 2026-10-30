@@ -9,6 +9,7 @@ export const CATEGORIES = [
   { slug: 'kids', name: { ar: 'قصص أطفال' }, description: { ar: 'حكايات قصيرة بلغة سهلة، تُقرأ مع الصغار أو يقرؤونها وحدهم.' }, sort_order: 2, icon: 'heart', cover: null, accent: 'kids', ornament: 'circles', published: true, no_character_images: false, kid_friendly: true, min_age: 6 },
   { slug: 'prophets', name: { ar: 'قصص الأنبياء' }, description: { ar: 'قصصٌ مستندةٌ إلى القرآن الكريم والسنّة الصحيحة، يرويها طفلٌ متخيَّل من القوم. لا تُصوِّر نبيًّا ولا صحابيًّا ولا ملَكًا، وكلامُ الأنبياء فيها بنصّ الآيات.' }, sort_order: 3, icon: 'book', cover: null, accent: 'prophets', ornament: 'star8', published: true, no_character_images: true, kid_friendly: false, min_age: null },
   { slug: 'novels', name: { ar: 'روايات' }, description: { ar: 'روايات تفاعلية أطول، بفصولٍ ونهاياتٍ متعدّدة.' }, sort_order: 4, icon: 'flag', cover: null, accent: 'novels', ornament: 'rule', published: true, no_character_images: false, kid_friendly: false, min_age: null },
+  { slug: 'plays', name: { ar: 'مسرحيات' }, description: { ar: 'مسرحيات عالمية خالدة، بفصولها ومشاهدها، تختار فيها ما يفعله البطل، ومعها نهاياتٌ أخرى «ماذا لو؟».' }, sort_order: 5, icon: 'robe', cover: 'hm_stage', accent: 'plays', ornament: 'curtain', published: true, no_character_images: false, kid_friendly: false, min_age: null },
 ];
 export const ALL_CATEGORIES = CATEGORIES.slice();   // admin view, includes hidden ones
 
@@ -23,15 +24,17 @@ export function setCategories(rows) {
   CATEGORIES.splice(0, CATEGORIES.length, ...list.filter((c) => c.published !== false));
 }
 
-// Visual identity (spec 4.2): one of four tested accents and one ornament per category.
-export const ACCENTS = [['poets', '#9b2f20'], ['kids', '#a84a12'], ['prophets', '#2f5d4a'], ['novels', '#2e4a6b']];
-export const ORNAMENT_KEYS = ['lozenge', 'circles', 'star8', 'rule'];
+// Visual identity (spec 4.2): one of five tested accents and one ornament per category.
+export const ACCENTS = [['poets', '#9b2f20'], ['kids', '#a84a12'], ['prophets', '#2f5d4a'], ['novels', '#2e4a6b'], ['plays', '#6b2a4a']];
+export const ORNAMENT_KEYS = ['lozenge', 'circles', 'star8', 'rule', 'curtain'];
 export const accentOf = (c) => (c && ACCENTS.some(([k]) => k === c.accent) ? c.accent : (c && ACCENTS.some(([k]) => k === c.slug) ? c.slug : 'poets'));
 const ORN = {
   lozenge: '<svg class="orn2" viewBox="0 0 180 14" aria-hidden="true"><path d="M0 7h70M110 7h70" stroke="currentColor" stroke-width="1"/><g fill="currentColor"><path d="M80 7l4-4 4 4-4 4z"/><path d="M86 7l4-4 4 4-4 4z"/><path d="M92 7l4-4 4 4-4 4z"/></g></svg>',
   circles: '<svg class="orn2" viewBox="0 0 150 14" aria-hidden="true"><path d="M0 7q7-5 14 0t14 0 14 0 14 0M94 7q7-5 14 0t14 0 14 0 14 0" fill="none" stroke="currentColor" stroke-width="1.2"/><g fill="currentColor"><circle cx="66" cy="7" r="3"/><circle cx="75" cy="7" r="4"/><circle cx="84" cy="7" r="3"/></g></svg>',
   star8: '<svg class="orn2" viewBox="0 0 150 14" aria-hidden="true"><path d="M0 7h62M88 7h62" stroke="currentColor" stroke-width="1"/><g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="69" y="1" width="12" height="12"/><rect x="69" y="1" width="12" height="12" transform="rotate(45 75 7)"/></g></svg>',
   rule: '<svg class="orn2" viewBox="0 0 150 14" aria-hidden="true"><path d="M0 5.5h68M82 5.5h68M0 8.5h68M82 8.5h68" stroke="currentColor" stroke-width=".8"/><circle cx="75" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+  // plays: a drawn stage curtain (two swags) over a footlight rule
+  curtain: '<svg class="orn2" viewBox="0 0 150 14" aria-hidden="true"><path d="M0 12h150" stroke="currentColor" stroke-width=".8"/><path d="M44 1h62M44 1q8 9 22 10M106 1q-8 9-22 10" fill="none" stroke="currentColor" stroke-width="1.2"/><g fill="currentColor"><circle cx="75" cy="10" r="1.6"/><circle cx="60" cy="12" r="1"/><circle cx="90" cy="12" r="1"/></g></svg>',
 };
 export const ornamentSvg = (c) => ORN[(c && c.ornament) || 'lozenge'] || ORN.lozenge;
 let patN = 0;
